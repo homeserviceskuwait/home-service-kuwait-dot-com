@@ -5,6 +5,7 @@ export const APP_NAME_AR = "تجهيزات المنزل الكويت";
 export const PHONE_NUMBER = "55791121";
 
 export const ADMIN_CREDENTIALS = {
+  email: 'admin@homeservice.com',
   password: 'admin123'
 };
 

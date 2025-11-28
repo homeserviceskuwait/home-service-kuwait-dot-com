@@ -36,3 +36,12 @@ export interface ChatMessage {
   text: string;
   timestamp: Date;
 }
+
+export interface ServiceRequest {
+  id: string;
+  customerName: string;
+  serviceType: string;
+  status: 'pending' | 'in-progress' | 'completed';
+  date: string;
+  amount: string;
+}

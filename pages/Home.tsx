@@ -44,7 +44,7 @@ const Home: React.FC = () => {
                 {/* Stats Section */}
                 <div className="container mx-auto px-4 -mt-10 relative z-20">
                     <div className="bg-slate-900 dark:bg-slate-800 text-white rounded-3xl p-8 md:p-12 shadow-2xl shadow-slate-900/10 dark:shadow-black/20 transition-colors duration-300">
-                        <div className={`grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-slate-800 dark:divide-slate-700 ${isRTL ? 'divide-x-reverse md:divide-x' : 'md:divide-x'}`}>
+                        <div className={`grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-slate-800 dark:divide-slate-700 md:border-x border-slate-800 dark:border-slate-700 ${isRTL ? 'divide-x-reverse md:divide-x' : 'md:divide-x'}`}>
                             {content.stats.map((stat, idx) => (
                                 <div key={idx} className="px-4">
                                     <div className="text-3xl md:text-5xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-br from-teal-400 to-teal-200">

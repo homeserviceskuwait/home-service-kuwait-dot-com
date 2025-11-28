@@ -3,7 +3,7 @@ import { ADMIN_CREDENTIALS } from '../constants';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (password: string) => boolean;
+  login: (email: string, password: string) => boolean;
   logout: () => void;
 }
 
@@ -15,8 +15,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return localStorage.getItem('isAdmin') === 'true';
   });
 
-  const login = (password: string) => {
-    if (password === ADMIN_CREDENTIALS.password) {
+  const login = (email: string, password: string) => {
+    if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
       setIsAuthenticated(true);
       localStorage.setItem('isAdmin', 'true');
       return true;
