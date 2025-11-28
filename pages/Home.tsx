@@ -93,7 +93,7 @@ const Home: React.FC = () => {
                 {/* Services Section */}
                 <section id="services" className="py-12 md:py-24 bg-slate-50/50 dark:bg-slate-900/50 transition-colors duration-300">
                     <div className="container mx-auto px-4">
-                        <div className="flex flex-col md:flex-row justify-between items-end mb-10 md:mb-16 gap-6">
+                        <div className="flex flex-col md:flex-row justify-between md:items-end mb-10 md:mb-16 gap-6">
                             <div>
                                 <span className="text-teal-600 dark:text-teal-400 font-extrabold tracking-widest uppercase text-xs">{content.services.subtitle}</span>
                                 <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mt-3">

@@ -13,7 +13,7 @@ const Testimonials: React.FC = () => {
       <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-50 dark:bg-slate-900 -skew-x-12 opacity-50 pointer-events-none"></div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="flex flex-col md:flex-row items-end justify-between mb-10 md:mb-16 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-16 gap-6">
           <div className="max-w-xl">
             <span className="text-teal-600 dark:text-teal-400 font-extrabold tracking-widest uppercase text-xs">{content.subtitle}</span>
             <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mt-3 leading-tight">
