@@ -9,6 +9,7 @@ import { CheckCircle2, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
 import * as LucideIcons from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import Map from '../components/Map';
 
 const Home: React.FC = () => {
     const { language, isRTL } = useLanguage();
@@ -194,6 +195,10 @@ const Home: React.FC = () => {
                                         <p className="text-slate-400 text-xs uppercase font-bold mb-1">{content.contact.emailUs}</p>
                                         <a href="mailto:info@homesetup.kw" className="text-xl font-bold text-white hover:text-teal-400 transition-colors">info@homesetup.kw</a>
                                     </div>
+                                </div>
+
+                                <div className="mt-12">
+                                    <Map className="h-64 w-full border-0" />
                                 </div>
                             </div>
 
