@@ -23,7 +23,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   useEffect(() => {
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = language;
-    
+
     if (language === 'ar') {
       document.body.classList.add('font-arabic');
       document.body.classList.remove('font-sans');
@@ -43,7 +43,15 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [theme]);
 
   const toggleTheme = () => {
+    // Add transition class
+    document.documentElement.classList.add('theme-transitioning');
+
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
+
+    // Remove transition class after animation completes
+    setTimeout(() => {
+      document.documentElement.classList.remove('theme-transitioning');
+    }, 750);
   };
 
   const isRTL = language === 'ar';
