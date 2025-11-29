@@ -1,36 +1,61 @@
-import React, { createContext, useContext, useState } from 'react';
-import { ADMIN_CREDENTIALS } from '../constants';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import authService, { AuthUser } from '../services/authService';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (email: string, password: string) => boolean;
-  logout: () => void;
+  user: AuthUser | null;
+  login: (credentials: { email: string; password: string }) => Promise<boolean>;
+  logout: () => Promise<void>;
+  hasRole: (role: 'admin' | 'super_admin') => boolean;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Initialize from local storage if needed, simple state for now
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('isAdmin') === 'true';
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const login = (email: string, password: string) => {
-    if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+  useEffect(() => {
+    // Initialize auth state from localStorage
+    authService.initializeAuth();
+    const currentUser = authService.getCurrentUser();
+    if (currentUser) {
       setIsAuthenticated(true);
-      localStorage.setItem('isAdmin', 'true');
-      return true;
+      setUser(currentUser);
     }
-    return false;
+    setIsLoading(false);
+  }, []);
+
+  const login = async (credentials: { email: string; password: string }): Promise<boolean> => {
+    try {
+      const authUser = await authService.login(credentials);
+      setIsAuthenticated(true);
+      setUser(authUser);
+      return true;
+    } catch (error) {
+      console.error('Login failed:', error);
+      return false;
+    }
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('isAdmin');
+  const logout = async () => {
+    try {
+      await authService.logout();
+      setIsAuthenticated(false);
+      setUser(null);
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
+  const hasRole = (role: 'admin' | 'super_admin'): boolean => {
+    return authService.hasRole(role);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, hasRole, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

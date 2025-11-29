@@ -5,20 +5,25 @@ import Login from './pages/Login';
 import Admin from './pages/Admin';
 import { LanguageProvider } from './LanguageContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { SiteSettingsProvider } from './contexts/SiteSettingsContext';
+
 
 const App: React.FC = () => {
   return (
     <BrowserRouter>
       <LanguageProvider>
         <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/admin" element={<Login />} />
-            <Route path="/admin/*" element={<Admin />} />
-            {/* Catch all redirect to home */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <SiteSettingsProvider>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/admin" element={<Login />} />
+              <Route path="/admin/*" element={<Admin />} />
+              {/* Catch all redirect to home */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </SiteSettingsProvider>
         </AuthProvider>
+
       </LanguageProvider>
     </BrowserRouter>
   );

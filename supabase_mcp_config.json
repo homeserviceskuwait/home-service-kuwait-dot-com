@@ -1,0 +1,13 @@
+{
+    "supabase": {
+        "command": "npx",
+        "args": [
+            "-y",
+            "@modelcontextprotocol/server-supabase"
+        ],
+        "env": {
+            "SUPABASE_URL": "https://wdemivjquvpylcadpnhp.supabase.co",
+            "SUPABASE_KEY": "sbp_a4e1603a03660dc9d66ee4cc8d2cb667d5ad9319"
+        }
+    }
+}

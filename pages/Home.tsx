@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import ServiceCard from '../components/ServiceCard';
@@ -10,11 +10,52 @@ import { useLanguage } from '../LanguageContext';
 import * as LucideIcons from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import Map from '../components/Map';
+import { getServices, getTestimonials, getBlogPosts, createServiceRequest } from '../services/apiService';
+import { Service, Testimonial as TestimonialType, BlogPost } from '../services/supabase';
+import { useSiteSettings } from '../contexts/SiteSettingsContext';
 
 const Home: React.FC = () => {
     const { language, isRTL } = useLanguage();
     const content = CONTENT[language];
     const location = useLocation();
+
+    // State for dynamic content
+    const [services, setServices] = useState<Service[]>([]);
+    const [testimonials, setTestimonials] = useState<TestimonialType[]>([]);
+    const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+    const { settings } = useSiteSettings();
+    const [loading, setLoading] = useState(true);
+    const [formData, setFormData] = useState({
+        name: '',
+        phone: '',
+        serviceId: '',
+        message: ''
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitMessage, setSubmitMessage] = useState('');
+
+    // Fetch data from database
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [servicesData, testimonialsData, blogPostsData] = await Promise.all([
+                    getServices(language),
+                    getTestimonials(),
+                    getBlogPosts()
+                ]);
+
+                setServices(servicesData);
+                setTestimonials(testimonialsData);
+                setBlogPosts(blogPostsData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [language]);
 
     // Scroll to hash on load
     useEffect(() => {
@@ -33,6 +74,33 @@ const Home: React.FC = () => {
     const getIcon = (iconName: string) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (LucideIcons as any)[iconName] || LucideIcons.HelpCircle;
+    };
+
+    // Handle form submission
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        setSubmitMessage('');
+
+        try {
+            const selectedService = services.find(s => s.id === formData.serviceId);
+            await createServiceRequest({
+                customer_name: formData.name,
+                customer_phone: formData.phone,
+                service_id: formData.serviceId,
+                service_type: selectedService ? (language === 'ar' ? selectedService.title_ar : selectedService.title_en) : 'General Inquiry',
+                message: formData.message,
+                status: 'pending'
+            });
+
+            setSubmitMessage(language === 'en' ? 'Thank you! Your request has been submitted successfully.' : 'شكراً! تم إرسال طلبك بنجاح.');
+            setFormData({ name: '', phone: '', serviceId: '', message: '' });
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            setSubmitMessage(language === 'en' ? 'Error submitting request. Please try again.' : 'خطأ في إرسال الطلب. يرجى المحاولة مرة أخرى.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -106,11 +174,32 @@ const Home: React.FC = () => {
                         </div>
 
                         <div className="flex overflow-x-auto snap-x snap-mandatory -mx-4 px-4 pb-6 md:pb-0 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 hide-scrollbar">
-                            {content.services.list.map((service) => (
-                                <div key={service.id} className="min-w-[85vw] md:min-w-0 snap-center">
-                                    <ServiceCard service={service} />
-                                </div>
-                            ))}
+                            {loading ? (
+                                // Loading skeleton
+                                Array.from({ length: 4 }).map((_, index) => (
+                                    <div key={index} className="min-w-[85vw] md:min-w-0 snap-center">
+                                        <div className="bg-slate-100 dark:bg-slate-800 rounded-3xl p-6 animate-pulse">
+                                            <div className="w-12 h-12 bg-slate-200 dark:bg-slate-700 rounded-2xl mb-4"></div>
+                                            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded mb-3"></div>
+                                            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded mb-2"></div>
+                                            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                services.map((service) => (
+                                    <div key={service.id} className="min-w-[85vw] md:min-w-0 snap-center">
+                                        <ServiceCard service={{
+                                            id: service.id,
+                                            title: language === 'ar' ? service.title_ar : service.title_en,
+                                            description: language === 'ar' ? service.description_ar : service.description_en,
+                                            iconName: service.icon_name,
+                                            imageUrl: service.image_url,
+                                            priceStart: language === 'ar' ? service.price_start_ar : service.price_start_en
+                                        }} />
+                                    </div>
+                                ))
+                            )}
                         </div>
 
                         <div className="mt-6 md:mt-12 text-center md:hidden">
@@ -137,23 +226,41 @@ const Home: React.FC = () => {
                             </a>
                         </div>
                         <div className="flex overflow-x-auto snap-x snap-mandatory -mx-4 px-4 pb-6 md:pb-0 md:mx-0 md:px-0 md:grid md:grid-cols-3 gap-4 md:gap-8 hide-scrollbar">
-                            {content.blog.list.map((post) => (
-                                <article key={post.id} className="min-w-[85vw] md:min-w-0 snap-center group cursor-pointer bg-white dark:bg-slate-900 rounded-3xl p-3 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/30 transition-all duration-300">
-                                    <div className="overflow-hidden rounded-2xl mb-5 h-56 relative">
-                                        <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
-                                        <div className={`absolute top-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-slate-800 dark:text-white ${isRTL ? 'right-4' : 'left-4'}`}>
-                                            {post.date}
+                            {loading ? (
+                                // Loading skeleton for blog posts
+                                Array.from({ length: 3 }).map((_, index) => (
+                                    <article key={index} className="min-w-[85vw] md:min-w-0 snap-center bg-white dark:bg-slate-900 rounded-3xl p-3 animate-pulse">
+                                        <div className="overflow-hidden rounded-2xl mb-5 h-56 bg-slate-200 dark:bg-slate-700"></div>
+                                        <div className="px-2 pb-4">
+                                            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded mb-3"></div>
+                                            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded mb-2"></div>
+                                            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
                                         </div>
-                                    </div>
-                                    <div className="px-2 pb-4">
-                                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors leading-tight">{post.title}</h3>
-                                        <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-2 mb-4">{post.excerpt}</p>
-                                        <span className={`inline-flex items-center text-sm font-bold text-slate-900 dark:text-white ${isRTL ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'} transition-transform`}>
-                                            {content.blog.readMore} <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-1 rotate-180' : 'ml-1'}`} />
-                                        </span>
-                                    </div>
-                                </article>
-                            ))}
+                                    </article>
+                                ))
+                            ) : (
+                                blogPosts.map((post) => (
+                                    <article key={post.id} className="min-w-[85vw] md:min-w-0 snap-center group cursor-pointer bg-white dark:bg-slate-900 rounded-3xl p-3 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/30 transition-all duration-300">
+                                        <div className="overflow-hidden rounded-2xl mb-5 h-56 relative">
+                                            <img src={post.image_url} alt={language === 'ar' ? post.title_ar : post.title_en} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                                            <div className={`absolute top-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-slate-800 dark:text-white ${isRTL ? 'right-4' : 'left-4'}`}>
+                                                {post.date}
+                                            </div>
+                                        </div>
+                                        <div className="px-2 pb-4">
+                                            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors leading-tight">
+                                                {language === 'ar' ? post.title_ar : post.title_en}
+                                            </h3>
+                                            <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-2 mb-4">
+                                                {language === 'ar' ? post.excerpt_ar : post.excerpt_en}
+                                            </p>
+                                            <span className={`inline-flex items-center text-sm font-bold text-slate-900 dark:text-white ${isRTL ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'} transition-transform`}>
+                                                {content.blog.readMore} <ArrowRight className={`w-4 h-4 ${isRTL ? 'mr-1 rotate-180' : 'ml-1'}`} />
+                                            </span>
+                                        </div>
+                                    </article>
+                                ))
+                            )}
                         </div>
                     </div>
                 </section>
@@ -189,39 +296,72 @@ const Home: React.FC = () => {
                                 <div className="flex flex-col sm:flex-row gap-6">
                                     <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm">
                                         <p className="text-slate-400 text-xs uppercase font-bold mb-1">{content.contact.callUs}</p>
-                                        <a href={`tel:${PHONE_NUMBER}`} className="text-2xl font-bold text-white hover:text-teal-400 transition-colors">{PHONE_NUMBER}</a>
+                                        <a href={`tel:${settings.phone_number || PHONE_NUMBER}`} className="text-2xl font-bold text-white hover:text-teal-400 transition-colors">{settings.phone_number || PHONE_NUMBER}</a>
                                     </div>
                                     <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 backdrop-blur-sm">
                                         <p className="text-slate-400 text-xs uppercase font-bold mb-1">{content.contact.emailUs}</p>
-                                        <a href="mailto:info@homesetup.kw" className="text-xl font-bold text-white hover:text-teal-400 transition-colors">info@homesetup.kw</a>
+                                        <a href={`mailto:${settings.email_address || 'info@homesetup.kw'}`} className="text-xl font-bold text-white hover:text-teal-400 transition-colors">{settings.email_address || 'info@homesetup.kw'}</a>
                                     </div>
                                 </div>
 
                                 <div className="mt-12">
-                                    <Map className="h-64 w-full border-0" />
+                                    {settings.location_map_url ? (
+                                        <iframe
+                                            src={settings.location_map_url}
+                                            className="w-full h-64 rounded-2xl border-0"
+                                            allowFullScreen
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                        ></iframe>
+                                    ) : (
+                                        <Map className="h-64 w-full border-0" />
+                                    )}
                                 </div>
                             </div>
 
                             <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 md:p-10 shadow-2xl transition-colors duration-300">
                                 <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">{content.contact.formTitle}</h3>
-                                <form className="space-y-5">
+                                <form className="space-y-5" onSubmit={handleSubmit}>
                                     <div className="grid grid-cols-2 gap-5">
                                         <div className="col-span-2 md:col-span-1">
                                             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">{content.contact.nameLabel}</label>
-                                            <input type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all bg-slate-50 dark:bg-slate-800 dark:text-white font-medium" placeholder="" />
+                                            <input
+                                                type="text"
+                                                value={formData.name}
+                                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all bg-slate-50 dark:bg-slate-800 dark:text-white font-medium"
+                                                placeholder={language === 'en' ? 'Your name' : 'اسمك'}
+                                                required
+                                            />
                                         </div>
                                         <div className="col-span-2 md:col-span-1">
                                             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">{content.contact.phoneLabel}</label>
-                                            <input type="tel" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all bg-slate-50 dark:bg-slate-800 dark:text-white font-medium" placeholder="" />
+                                            <input
+                                                type="tel"
+                                                value={formData.phone}
+                                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all bg-slate-50 dark:bg-slate-800 dark:text-white font-medium"
+                                                placeholder={language === 'en' ? 'Your phone number' : 'رقم هاتفك'}
+                                                required
+                                            />
                                         </div>
                                     </div>
 
                                     <div>
                                         <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">{content.contact.serviceLabel}</label>
                                         <div className="relative">
-                                            <select className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all bg-slate-50 dark:bg-slate-800 dark:text-white font-medium appearance-none">
-                                                <option>{language === 'en' ? 'Select a service...' : 'اختر خدمة...'}</option>
-                                                {content.services.list.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+                                            <select
+                                                value={formData.serviceId}
+                                                onChange={(e) => setFormData({ ...formData, serviceId: e.target.value })}
+                                                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all bg-slate-50 dark:bg-slate-800 dark:text-white font-medium appearance-none"
+                                                required
+                                            >
+                                                <option value="">{language === 'en' ? 'Select a service...' : 'اختر خدمة...'}</option>
+                                                {services.map(s => (
+                                                    <option key={s.id} value={s.id}>
+                                                        {language === 'ar' ? s.title_ar : s.title_en}
+                                                    </option>
+                                                ))}
                                             </select>
                                             <div className={`absolute top-1/2 -translate-y-1/2 pointer-events-none ${isRTL ? 'left-4' : 'right-4'}`}>
                                                 <ArrowRight className="w-4 h-4 text-slate-400 rotate-90" />
@@ -231,12 +371,28 @@ const Home: React.FC = () => {
 
                                     <div>
                                         <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">{content.contact.messageLabel}</label>
-                                        <textarea rows={3} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all bg-slate-50 dark:bg-slate-800 dark:text-white font-medium resize-none" placeholder=""></textarea>
+                                        <textarea
+                                            rows={3}
+                                            value={formData.message}
+                                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all bg-slate-50 dark:bg-slate-800 dark:text-white font-medium resize-none"
+                                            placeholder={language === 'en' ? 'Tell us about your needs...' : 'أخبرنا باحتياجاتك...'}
+                                        ></textarea>
                                     </div>
 
-                                    <button type="button" className="w-full bg-teal-600 text-white font-bold py-4 rounded-xl hover:bg-teal-700 transition-all shadow-xl shadow-teal-600/20 hover:scale-[1.02] active:scale-[0.98]">
-                                        {content.contact.submitBtn}
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="w-full bg-teal-600 text-white font-bold py-4 rounded-xl hover:bg-teal-700 transition-all shadow-xl shadow-teal-600/20 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isSubmitting ? (language === 'en' ? 'Submitting...' : 'جاري الإرسال...') : content.contact.submitBtn}
                                     </button>
+
+                                    {submitMessage && (
+                                        <div className={`text-center text-sm mt-4 ${submitMessage.includes('success') ? 'text-green-600' : 'text-red-600'}`}>
+                                            {submitMessage}
+                                        </div>
+                                    )}
 
                                     <p className="text-center text-xs text-slate-400 mt-4">
                                         {content.contact.disclaimer}

@@ -16,12 +16,19 @@ const Login: React.FC = () => {
     setLanguage('en');
   }, [setLanguage]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (login(email, password)) {
-      navigate('/admin/dashboard');
-    } else {
-      setError('Invalid email or password');
+    setError('');
+    
+    try {
+      const success = await login({ email, password });
+      if (success) {
+        navigate('/admin/dashboard');
+      } else {
+        setError('Invalid email or password');
+      }
+    } catch (error) {
+      setError('Login failed. Please try again.');
     }
   };
 

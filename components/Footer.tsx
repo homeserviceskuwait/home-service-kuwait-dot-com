@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { PHONE_NUMBER, SERVICE_AREAS, BRANDS, CONTENT } from '../constants';
 import { Instagram, Facebook, Twitter, MapPin, Mail, Phone, ChevronDown } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
+import { useSiteSettings } from '../contexts/SiteSettingsContext';
 import Logo from './Logo';
 import AppName from './AppName';
 
 const Footer: React.FC = () => {
   const { language, isRTL } = useLanguage();
+  const { settings } = useSiteSettings();
   const content = CONTENT[language].footer;
   const navContent = CONTENT[language].nav;
 
@@ -101,15 +103,15 @@ const Footer: React.FC = () => {
               <ul className="space-y-4 text-sm text-slate-500 dark:text-slate-400 mt-2 lg:mt-6">
                 <li className="flex items-start gap-3">
                   <MapPin className="h-5 w-5 text-teal-600 dark:text-teal-400 shrink-0" />
-                  <span>Kuwait City, Kuwait</span>
+                  <span>{settings.address || 'Kuwait City, Kuwait'}</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Phone className="h-5 w-5 text-teal-600 dark:text-teal-400 shrink-0" />
-                  <a href={`tel:${PHONE_NUMBER}`} className="font-medium text-slate-900 dark:text-white hover:text-teal-600 dark:hover:text-teal-400" dir="ltr">{PHONE_NUMBER}</a>
+                  <a href={`tel:${settings.phone_number || PHONE_NUMBER}`} className="font-medium text-slate-900 dark:text-white hover:text-teal-600 dark:hover:text-teal-400" dir="ltr">{settings.phone_number || PHONE_NUMBER}</a>
                 </li>
                 <li className="flex items-center gap-3">
                   <Mail className="h-5 w-5 text-teal-600 dark:text-teal-400 shrink-0" />
-                  <span>info@homesetup.kw</span>
+                  <span>{settings.email_address || 'info@homesetup.kw'}</span>
                 </li>
               </ul>
             </MobileAccordion>
