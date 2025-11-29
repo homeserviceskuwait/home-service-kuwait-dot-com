@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
               <ul className="space-y-4 text-sm text-slate-500 dark:text-slate-400 mt-2 lg:mt-6">
                 <li><a href="/" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">{navContent.home}</a></li>
                 <li><a href="/#services" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">{navContent.services}</a></li>
-                <li><a href="/#blog" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">{navContent.blog}</a></li>
+                <li><a href="/blog" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">{navContent.blog}</a></li>
                 <li><a href="/#contact" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">{navContent.contact}</a></li>
                 <li><a href="/admin" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Admin Login</a></li>
               </ul>

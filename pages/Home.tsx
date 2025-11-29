@@ -8,16 +8,18 @@ import { CONTENT, PHONE_NUMBER } from '../constants';
 import { CheckCircle2, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
 import * as LucideIcons from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Map from '../components/Map';
 import { getServices, getTestimonials, getBlogPosts, createServiceRequest } from '../services/apiService';
 import { Service, Testimonial as TestimonialType, BlogPost } from '../services/supabase';
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
+import ServiceRequestModal from '../components/ServiceRequestModal';
 
 const Home: React.FC = () => {
     const { language, isRTL } = useLanguage();
     const content = CONTENT[language];
     const location = useLocation();
+    const navigate = useNavigate();
 
     // State for dynamic content
     const [services, setServices] = useState<Service[]>([]);
@@ -33,6 +35,15 @@ const Home: React.FC = () => {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitMessage, setSubmitMessage] = useState('');
+
+    // Modal State
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedService, setSelectedService] = useState<Service | null>(null);
+
+    const handleServiceClick = (service: Service) => {
+        setSelectedService(service);
+        setIsModalOpen(true);
+    };
 
     // Fetch data from database
     useEffect(() => {
@@ -196,7 +207,9 @@ const Home: React.FC = () => {
                                             iconName: service.icon_name,
                                             imageUrl: service.image_url,
                                             priceStart: language === 'ar' ? service.price_start_ar : service.price_start_en
-                                        }} />
+                                        }}
+                                            onClick={() => handleServiceClick(service)}
+                                        />
                                     </div>
                                 ))
                             )}
@@ -221,7 +234,7 @@ const Home: React.FC = () => {
                                 <span className="text-teal-600 dark:text-teal-400 font-extrabold tracking-widest uppercase text-xs">{content.blog.subtitle}</span>
                                 <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mt-3">{content.blog.title}</h2>
                             </div>
-                            <a href="#" className="hidden md:flex items-center gap-2 text-sm font-bold text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-200 transition-colors">
+                            <a href="/blog" className="hidden md:flex items-center gap-2 text-sm font-bold text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-200 transition-colors">
                                 {content.blog.cta} <ArrowRight className={`w-4 h-4 ${isRTL ? 'rotate-180' : ''}`} />
                             </a>
                         </div>
@@ -240,7 +253,11 @@ const Home: React.FC = () => {
                                 ))
                             ) : (
                                 blogPosts.map((post) => (
-                                    <article key={post.id} className="min-w-[85vw] md:min-w-0 snap-center group cursor-pointer bg-white dark:bg-slate-900 rounded-3xl p-3 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/30 transition-all duration-300">
+                                    <article
+                                        key={post.id}
+                                        onClick={() => navigate(`/blog/${post.slug}`)}
+                                        className="min-w-[85vw] md:min-w-0 snap-center group cursor-pointer bg-white dark:bg-slate-900 rounded-3xl p-3 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/30 transition-all duration-300"
+                                    >
                                         <div className="overflow-hidden rounded-2xl mb-5 h-56 relative">
                                             <img src={post.image_url} alt={language === 'ar' ? post.title_ar : post.title_en} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
                                             <div className={`absolute top-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-slate-800 dark:text-white ${isRTL ? 'right-4' : 'left-4'}`}>
@@ -404,6 +421,13 @@ const Home: React.FC = () => {
                     </div>
                 </section>
             </main >
+
+            <ServiceRequestModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                selectedService={selectedService}
+                services={services}
+            />
 
             <Footer />
         </div >

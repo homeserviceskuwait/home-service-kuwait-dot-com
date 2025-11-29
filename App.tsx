@@ -3,10 +3,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
+import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
 import { LanguageProvider } from './LanguageContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { SiteSettingsProvider } from './contexts/SiteSettingsContext';
-
 
 const App: React.FC = () => {
   return (
@@ -18,12 +19,14 @@ const App: React.FC = () => {
               <Route path="/" element={<Home />} />
               <Route path="/admin" element={<Login />} />
               <Route path="/admin/*" element={<Admin />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
               {/* Catch all redirect to home */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </SiteSettingsProvider>
         </AuthProvider>
-
       </LanguageProvider>
     </BrowserRouter>
   );
