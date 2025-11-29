@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useLanguage } from '../LanguageContext';
+import { Menu } from 'lucide-react';
 import AdminSidebar from '../components/admin/AdminSidebar';
 import DashboardView from '../components/admin/DashboardView';
 import ServicesView from '../components/admin/ServicesView';
@@ -9,10 +10,12 @@ import RequestsView from '../components/admin/RequestsView';
 import BlogPostsView from '../components/admin/BlogPostsView';
 import TestimonialsView from '../components/admin/TestimonialsView';
 import SettingsView from '../components/admin/SettingsView';
+import Logo from '../components/Logo';
 
 const Admin: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
   const { setLanguage } = useLanguage();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     setLanguage('en');
@@ -32,17 +35,34 @@ const Admin: React.FC = () => {
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <AdminSidebar />
-      <div className="flex-1 p-8 overflow-y-auto">
-        <Routes>
-          <Route path="dashboard" element={<DashboardView />} />
-          <Route path="services" element={<ServicesView />} />
-          <Route path="requests" element={<RequestsView />} />
-          <Route path="blogs" element={<BlogPostsView />} />
-          <Route path="testimonials" element={<TestimonialsView />} />
-          <Route path="settings" element={<SettingsView />} />
-          <Route path="*" element={<DashboardView />} />
-        </Routes>
+      <AdminSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Mobile Header */}
+        <div className="md:hidden bg-white border-b border-slate-200 p-4 flex items-center justify-between sticky top-0 z-30">
+          <div className="flex items-center gap-3">
+            <Logo className="w-8 h-8" />
+            <span className="font-bold text-lg text-slate-900">Admin Panel</span>
+          </div>
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+          >
+            <Menu className="w-6 h-6 text-slate-600" />
+          </button>
+        </div>
+
+        <div className="flex-1 p-4 md:p-8 overflow-y-auto">
+          <Routes>
+            <Route path="dashboard" element={<DashboardView />} />
+            <Route path="services" element={<ServicesView />} />
+            <Route path="requests" element={<RequestsView />} />
+            <Route path="blogs" element={<BlogPostsView />} />
+            <Route path="testimonials" element={<TestimonialsView />} />
+            <Route path="settings" element={<SettingsView />} />
+            <Route path="*" element={<DashboardView />} />
+          </Routes>
+        </div>
       </div>
     </div>
   );

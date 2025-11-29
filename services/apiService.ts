@@ -317,3 +317,34 @@ export const getLocalizedContent = (item: Service | Testimonial | BlogPost, lang
     price_start: (item as any).price_start_en || (item as any).price_start,
   };
 };
+
+export const getDashboardStats = async () => {
+  try {
+    const [
+      { count: servicesCount },
+      { count: requestsCount },
+      { count: pendingRequestsCount },
+      { count: blogsCount }
+    ] = await Promise.all([
+      supabase.from('services').select('*', { count: 'exact', head: true }).eq('is_active', true),
+      supabase.from('service_requests').select('*', { count: 'exact', head: true }),
+      supabase.from('service_requests').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+      supabase.from('blog_posts').select('*', { count: 'exact', head: true }).eq('is_published', true)
+    ]);
+
+    return {
+      totalServices: servicesCount || 0,
+      totalRequests: requestsCount || 0,
+      pendingRequests: pendingRequestsCount || 0,
+      totalBlogs: blogsCount || 0
+    };
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    return {
+      totalServices: 0,
+      totalRequests: 0,
+      pendingRequests: 0,
+      totalBlogs: 0
+    };
+  }
+};

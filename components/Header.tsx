@@ -155,15 +155,6 @@ const Header: React.FC = () => {
                   <ChevronRight className={`h-5 w-5 opacity-30 ${isRTL ? 'rotate-180' : ''}`} />
                 </Link>
               ))}
-              {/* Admin Link for convenience */}
-              <Link
-                to="/admin"
-                onClick={() => setIsMenuOpen(false)}
-                className="flex items-center justify-between px-4 py-4 rounded-2xl text-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-teal-50 dark:hover:bg-slate-800 hover:text-teal-700 dark:hover:text-teal-400 transition-all"
-              >
-                Admin Panel
-                <ChevronRight className={`h-5 w-5 opacity-30 ${isRTL ? 'rotate-180' : ''}`} />
-              </Link>
             </nav>
 
             <div className="mt-auto pt-6 border-t border-slate-100 dark:border-slate-800">
