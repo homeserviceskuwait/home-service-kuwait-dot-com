@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, X, Phone, ChevronRight, Globe, Moon, Sun } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Menu, X, Phone, ChevronRight, Globe, Moon, Sun, ChevronDown } from 'lucide-react';
 import { PHONE_NUMBER, CONTENT } from '../constants';
 import { useLanguage } from '../LanguageContext';
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
@@ -12,20 +12,33 @@ const Header: React.FC = () => {
   const { settings } = useSiteSettings();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsServicesOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const content = CONTENT[language];
 
   const navLinks = [
     { name: content.nav.home, href: '/' },
-    { name: content.nav.services, href: '/#services' },
+    { name: content.nav.services, href: '/#services', isDropdown: true },
     { name: content.nav.whyUs, href: '/#features' },
     { name: content.nav.blog, href: '/blog' },
     { name: content.nav.contact, href: '/#contact' },
@@ -39,8 +52,8 @@ const Header: React.FC = () => {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-          ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-lg py-3'
-          : 'bg-transparent py-6'
+            ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-lg py-3'
+            : 'bg-transparent py-6'
           }`}
       >
         <div className="container mx-auto px-4 md:px-6">
@@ -57,13 +70,39 @@ const Header: React.FC = () => {
             <nav className="hidden lg:flex items-center bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm px-2 py-1.5 rounded-full border border-white/20 dark:border-slate-700/50 shadow-sm ml-4 mr-4">
               <ul className="flex items-center gap-1">
                 {navLinks.map((link) => (
-                  <li key={link.name}>
-                    <Link
-                      to={link.href}
-                      className="px-5 py-2.5 rounded-full text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-teal-700 dark:hover:text-teal-400 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm transition-all duration-200 block"
-                    >
-                      {link.name}
-                    </Link>
+                  <li key={link.name} className="relative" ref={link.isDropdown ? dropdownRef : null}>
+                    {link.isDropdown ? (
+                      <button
+                        onClick={() => setIsServicesOpen(!isServicesOpen)}
+                        className="flex items-center gap-1 px-5 py-2.5 rounded-full text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-teal-700 dark:hover:text-teal-400 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm transition-all duration-200"
+                      >
+                        {link.name}
+                        <ChevronDown className={`h-4 w-4 transition-transform ${isServicesOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                    ) : (
+                      <Link
+                        to={link.href}
+                        className="px-5 py-2.5 rounded-full text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-teal-700 dark:hover:text-teal-400 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm transition-all duration-200 block"
+                      >
+                        {link.name}
+                      </Link>
+                    )}
+
+                    {/* Dropdown Menu */}
+                    {link.isDropdown && isServicesOpen && (
+                      <div className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden py-2 animate-fade-in-up">
+                        {content.services.list.map((service) => (
+                          <Link
+                            key={service.id}
+                            to={`/services/${service.id}`}
+                            onClick={() => setIsServicesOpen(false)}
+                            className="block px-4 py-3 text-sm text-slate-600 dark:text-slate-300 hover:bg-teal-50 dark:hover:bg-slate-700 hover:text-teal-700 dark:hover:text-teal-400 transition-colors"
+                          >
+                            {service.title}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -128,11 +167,11 @@ const Header: React.FC = () => {
         <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}></div>
         <div
           className={`absolute top-0 w-[85%] max-w-sm h-full bg-white dark:bg-slate-900 shadow-2xl transition-transform duration-300 ease-out transform ${isRTL
-            ? (isMenuOpen ? 'left-0 translate-x-0' : 'left-0 -translate-x-full')
-            : (isMenuOpen ? 'right-0 translate-x-0' : 'right-0 translate-x-full')
+              ? (isMenuOpen ? 'left-0 translate-x-0' : 'left-0 -translate-x-full')
+              : (isMenuOpen ? 'right-0 translate-x-0' : 'right-0 -translate-x-full')
             }`}
         >
-          <div className="p-6 h-full flex flex-col">
+          <div className="p-6 h-full flex flex-col overflow-y-auto">
             <div className="flex justify-between items-center mb-8">
               <span className="text-xl font-bold text-slate-900 dark:text-white">{content.home}</span>
               <button
@@ -145,15 +184,42 @@ const Header: React.FC = () => {
 
             <nav className="flex-1 space-y-2">
               {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.href}
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center justify-between px-4 py-4 rounded-2xl text-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-teal-50 dark:hover:bg-slate-800 hover:text-teal-700 dark:hover:text-teal-400 transition-all"
-                >
-                  {link.name}
-                  <ChevronRight className={`h-5 w-5 opacity-30 ${isRTL ? 'rotate-180' : ''}`} />
-                </Link>
+                <div key={link.name}>
+                  {link.isDropdown ? (
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setIsServicesOpen(!isServicesOpen)}
+                        className="flex items-center justify-between w-full px-4 py-4 rounded-2xl text-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-teal-50 dark:hover:bg-slate-800 hover:text-teal-700 dark:hover:text-teal-400 transition-all"
+                      >
+                        {link.name}
+                        <ChevronDown className={`h-5 w-5 transition-transform ${isServicesOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                      {isServicesOpen && (
+                        <div className="pl-4 space-y-1">
+                          {content.services.list.map((service) => (
+                            <Link
+                              key={service.id}
+                              to={`/services/${service.id}`}
+                              onClick={() => setIsMenuOpen(false)}
+                              className="block px-4 py-3 text-base text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400"
+                            >
+                              {service.title}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <Link
+                      to={link.href}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center justify-between px-4 py-4 rounded-2xl text-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-teal-50 dark:hover:bg-slate-800 hover:text-teal-700 dark:hover:text-teal-400 transition-all"
+                    >
+                      {link.name}
+                      <ChevronRight className={`h-5 w-5 opacity-30 ${isRTL ? 'rotate-180' : ''}`} />
+                    </Link>
+                  )}
+                </div>
               ))}
             </nav>
 

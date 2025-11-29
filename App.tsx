@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Admin from './pages/Admin';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
+import ServiceDetail from './pages/ServiceDetail';
 import { LanguageProvider } from './LanguageContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { SiteSettingsProvider } from './contexts/SiteSettingsContext';
@@ -22,6 +23,7 @@ const App: React.FC = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/services/:id" element={<ServiceDetail />} />
               {/* Catch all redirect to home */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

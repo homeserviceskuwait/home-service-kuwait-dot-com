@@ -16,6 +16,13 @@ export interface Service {
   title_ar: string;
   description_en: string;
   description_ar: string;
+  long_description_en?: string;
+  long_description_ar?: string;
+  features_en?: string[];
+  features_ar?: string[];
+  benefits_en?: string[];
+  benefits_ar?: string[];
+  gallery_images?: string[];
   icon_name: string;
   image_url: string;
   price_start_en: string;

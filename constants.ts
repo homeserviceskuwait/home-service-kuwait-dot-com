@@ -1,7 +1,7 @@
 import { Service, Testimonial, BlogPost } from './types';
 
 export const APP_NAME_EN = "Home Service Kuwait";
-export const APP_NAME_AR = "تجهيزات المنزل الكويت";
+export const APP_NAME_AR = "خدمات المنزل الكويت";
 export const PHONE_NUMBER = "+965 55791121";
 
 export const ADMIN_CREDENTIALS = {
@@ -86,7 +86,7 @@ export type ContentType = {
   }
 };
 
-const SERVICES_EN: Service[] = [
+export const SERVICES_EN: Service[] = [
   {
     id: 'pbx',
     title: 'Telephone Exchange (PBX)',
@@ -136,11 +136,11 @@ const SERVICES_EN: Service[] = [
     priceStart: 'Call for Quote'
   },
   {
-    id: 'panel',
-    title: 'Distribution Panel Setup',
-    description: 'Efficient and reliable distribution panel solutions for managing business and home electrical systems.',
-    iconName: 'Settings',
-    imageUrl: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&q=80&w=800',
+    id: 'internet',
+    title: 'Internet Service',
+    description: 'High-speed internet installation and network configuration for seamless connectivity in homes and offices.',
+    iconName: 'Wifi',
+    imageUrl: 'https://images.unsplash.com/photo-1544197150-b99a580bbcbf?auto=format&fit=crop&q=80&w=800',
     priceStart: 'Call for Quote'
   },
   {
@@ -153,7 +153,7 @@ const SERVICES_EN: Service[] = [
   }
 ];
 
-const SERVICES_AR: Service[] = [
+export const SERVICES_AR: Service[] = [
   {
     id: 'pbx',
     title: 'بدالة هواتف باناسونيك',
@@ -203,11 +203,11 @@ const SERVICES_AR: Service[] = [
     priceStart: 'اتصل للاستفسار'
   },
   {
-    id: 'panel',
-    title: 'لوحات توزيع الكهرباء',
-    description: 'تمديد قسائم وحلول فعالة وموثوقة للوحات التوزيع لإدارة الأنظمة الكهربائية المنزلية والتجارية.',
-    iconName: 'Settings',
-    imageUrl: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&q=80&w=800',
+    id: 'internet',
+    title: 'خدمة الإنترنت',
+    description: 'تركيب إنترنت عالي السرعة وتكوين الشبكة لاتصال سلس في المنازل والمكاتب.',
+    iconName: 'Wifi',
+    imageUrl: 'https://images.unsplash.com/photo-1544197150-b99a580bbcbf?auto=format&fit=crop&q=80&w=800',
     priceStart: 'اتصل للاستفسار'
   },
   {
@@ -220,7 +220,7 @@ const SERVICES_AR: Service[] = [
   }
 ];
 
-const TESTIMONIALS_EN: Testimonial[] = [
+export const TESTIMONIALS_EN: Testimonial[] = [
   {
     id: '1',
     name: 'Abdullah Al-Zad',
@@ -251,12 +251,12 @@ const TESTIMONIALS_EN: Testimonial[] = [
   }
 ];
 
-const TESTIMONIALS_AR: Testimonial[] = [
+export const TESTIMONIALS_AR: Testimonial[] = [
   {
     id: '1',
     name: 'عبدالله الزاد',
     role: 'رجل أعمال',
-    comment: 'أمتلك ثلاثة مبانٍ تجارية، وتقوم هوم سيت اب الكويت بصيانتها بانتظام. يتم تلبية أي احتياج فور الاتصال. علاوة على ذلك، دعمهم ممتاز.',
+    comment: 'أمتلك ثلاثة مبانٍ تجارية، وتقوم خدمات المنزل الكويت بصيانتها بانتظام. يتم تلبية أي احتياج فور الاتصال. علاوة على ذلك، دعمهم ممتاز.',
     rating: 5
   },
   {
@@ -282,7 +282,7 @@ const TESTIMONIALS_AR: Testimonial[] = [
   }
 ];
 
-const BLOG_EN: BlogPost[] = [
+export const BLOG_EN: BlogPost[] = [
   {
     id: '1',
     title: 'Fingerprint attendance and departure device',
@@ -306,7 +306,7 @@ const BLOG_EN: BlogPost[] = [
   }
 ];
 
-const BLOG_AR: BlogPost[] = [
+export const BLOG_AR: BlogPost[] = [
   {
     id: '1',
     title: 'جهاز بصمة الحضور والانصراف',
@@ -336,16 +336,6 @@ export const CONTENT = {
       home: 'Home',
       services: 'Services',
       whyUs: 'Why Us',
-      blog: 'Blog',
-      contact: 'Contact',
-      callNow: 'Call Now'
-    },
-    hero: {
-      tagline: '#1 Home Service in Kuwait',
-      titleLine1: 'Smart Living',
-      titleLine2: 'Starts Here.',
-      description: 'Seven years of expertise in securing and upgrading homes across Kuwait. From CCTV to smart locks, we handle the tech so you can enjoy the comfort.',
-      ctaCall: `Call ${PHONE_NUMBER}`,
       ctaServices: 'Explore Services',
       features: [
         "Seven years of experience",
@@ -539,4 +529,24 @@ export const BRANDS = {
 
 export const SERVICE_AREAS = [
   "Kuwait", "Ahmadi", "Farwaniya", "Sabah Al-Ahmad", "Mubarak Al-Kabeer", "Jahra", "Asma", "Hawalli", "Al-Mutla"
+];
+
+export const HERO_SERVICES_EN = [
+  "CCTV Surveillance",
+  "Fingerprint Attendance",
+  "Audio Systems",
+  "Smart Door Locks",
+  "Telephone Exchange (PBX)",
+  "Internet Service",
+  "Intercom Systems"
+];
+
+export const HERO_SERVICES_AR = [
+  "كاميرات مراقبة",
+  "أجهزة بصمة حضور",
+  "الأنظمة الصوتية",
+  "أقفال أبواب ذكية",
+  "بدالة هواتف باناسونيك",
+  "خدمة الإنترنت",
+  "أنظمة الانتركم"
 ];

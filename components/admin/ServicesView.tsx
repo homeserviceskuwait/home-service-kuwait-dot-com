@@ -34,6 +34,13 @@ const ServiceModal: React.FC<{
                 title_ar: '',
                 description_en: '',
                 description_ar: '',
+                long_description_en: '',
+                long_description_ar: '',
+                features_en: [],
+                features_ar: [],
+                benefits_en: [],
+                benefits_ar: [],
+                gallery_images: [],
                 price_start_en: '',
                 price_start_ar: '',
                 category: '',
@@ -104,6 +111,36 @@ const ServiceModal: React.FC<{
                                 />
                             </div>
                             <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Long Description (EN)</label>
+                                <textarea
+                                    rows={5}
+                                    value={formData.long_description_en || ''}
+                                    onChange={e => setFormData({ ...formData, long_description_en: e.target.value })}
+                                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                    placeholder="Detailed description of the service..."
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Features (EN) - One per line</label>
+                                <textarea
+                                    rows={4}
+                                    value={formData.features_en?.join('\n') || ''}
+                                    onChange={e => setFormData({ ...formData, features_en: e.target.value.split('\n') })}
+                                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                    placeholder="Feature 1&#10;Feature 2&#10;Feature 3"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Benefits (EN) - One per line</label>
+                                <textarea
+                                    rows={4}
+                                    value={formData.benefits_en?.join('\n') || ''}
+                                    onChange={e => setFormData({ ...formData, benefits_en: e.target.value.split('\n') })}
+                                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                    placeholder="Benefit 1&#10;Benefit 2&#10;Benefit 3"
+                                />
+                            </div>
+                            <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Price Start (EN)</label>
                                 <input
                                     type="text"
@@ -137,6 +174,36 @@ const ServiceModal: React.FC<{
                                     value={formData.description_ar || ''}
                                     onChange={e => setFormData({ ...formData, description_ar: e.target.value })}
                                     className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">وصف تفصيلي (AR)</label>
+                                <textarea
+                                    rows={5}
+                                    value={formData.long_description_ar || ''}
+                                    onChange={e => setFormData({ ...formData, long_description_ar: e.target.value })}
+                                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                    placeholder="وصف تفصيلي للخدمة..."
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">المميزات (AR) - ميزة في كل سطر</label>
+                                <textarea
+                                    rows={4}
+                                    value={formData.features_ar?.join('\n') || ''}
+                                    onChange={e => setFormData({ ...formData, features_ar: e.target.value.split('\n') })}
+                                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                    placeholder="ميزة 1&#10;ميزة 2&#10;ميزة 3"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">الفوائد (AR) - فائدة في كل سطر</label>
+                                <textarea
+                                    rows={4}
+                                    value={formData.benefits_ar?.join('\n') || ''}
+                                    onChange={e => setFormData({ ...formData, benefits_ar: e.target.value.split('\n') })}
+                                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                    placeholder="فائدة 1&#10;فائدة 2&#10;فائدة 3"
                                 />
                             </div>
                             <div>
@@ -190,6 +257,16 @@ const ServiceModal: React.FC<{
                                     <Upload className="w-5 h-5 text-slate-600" />
                                 </a>
                             </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Project Gallery Images (One URL per line)</label>
+                            <textarea
+                                rows={4}
+                                value={formData.gallery_images?.join('\n') || ''}
+                                onChange={e => setFormData({ ...formData, gallery_images: e.target.value.split('\n') })}
+                                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"
+                            />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">Sort Order</label>

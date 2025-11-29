@@ -35,17 +35,9 @@ const Home: React.FC = () => {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitMessage, setSubmitMessage] = useState('');
-
-    // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedService, setSelectedService] = useState<Service | null>(null);
 
-    const handleServiceClick = (service: Service) => {
-        setSelectedService(service);
-        setIsModalOpen(true);
-    };
-
-    // Fetch data from database
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -114,12 +106,16 @@ const Home: React.FC = () => {
         }
     };
 
+    const handleServiceClick = (service: Service) => {
+        navigate(`/services/${service.id}`);
+    };
+
     return (
         <div className={`min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-white overflow-x-hidden transition-colors duration-300 ${isRTL ? 'font-arabic' : 'font-sans'}`}>
             <Header />
 
             <main>
-                <Hero />
+                <Hero services={services} />
 
                 {/* Stats Section */}
                 <div className="container mx-auto px-4 -mt-10 relative z-20">
