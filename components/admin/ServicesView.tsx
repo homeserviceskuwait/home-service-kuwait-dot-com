@@ -246,7 +246,7 @@ const ServicesView: React.FC = () => {
     const fetchServices = async () => {
         setLoading(true);
         try {
-            const data = await getServices();
+            const data = await getServices(language, false);
             setServices(data);
         } catch (error) {
             console.error('Error fetching services:', error);

@@ -43,7 +43,7 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ isOpen, onClo
             const serviceToSubmit = services.find(s => s.id === formData.serviceId);
             await createServiceRequest({
                 customer_name: formData.name,
-                customer_phone: formData.phone,
+                customer_phone: `+965 ${formData.phone}`,
                 service_id: formData.serviceId,
                 service_type: serviceToSubmit ? (language === 'ar' ? serviceToSubmit.title_ar : serviceToSubmit.title_en) : 'General Inquiry',
                 message: formData.message,
@@ -143,14 +143,24 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ isOpen, onClo
                                     <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">
                                         {language === 'en' ? 'Phone Number' : 'رقم الهاتف'}
                                     </label>
-                                    <input
-                                        type="tel"
-                                        value={formData.phone}
-                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all bg-slate-50 dark:bg-slate-800 dark:text-white font-medium"
-                                        placeholder={language === 'en' ? 'Enter your phone number' : 'أدخل رقم هاتفك'}
-                                        required
-                                    />
+                                    <div className="relative" dir="ltr">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-medium border-r border-slate-200 pr-3">
+                                            +965
+                                        </div>
+                                        <input
+                                            type="tel"
+                                            value={formData.phone}
+                                            onChange={(e) => {
+                                                // Allow only numbers
+                                                const val = e.target.value.replace(/\D/g, '');
+                                                setFormData({ ...formData, phone: val });
+                                            }}
+                                            className="w-full pl-20 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all bg-slate-50 dark:bg-slate-800 dark:text-white font-medium text-left"
+                                            placeholder="12345678"
+                                            required
+                                            maxLength={8}
+                                        />
+                                    </div>
                                 </div>
 
                                 <div>

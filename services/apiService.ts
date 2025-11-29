@@ -1,13 +1,17 @@
 import { supabase, Service, Testimonial, BlogPost, ServiceRequest, AdminUser, SiteSetting } from './supabase';
 
 // Services API
-export const getServices = async (language: 'en' | 'ar' = 'en'): Promise<Service[]> => {
-  const { data, error } = await supabase
+export const getServices = async (language: 'en' | 'ar' = 'en', activeOnly: boolean = true): Promise<Service[]> => {
+  let query = supabase
     .from('services')
     .select('*')
-    .eq('is_active', true)
     .order('sort_order', { ascending: true });
 
+  if (activeOnly) {
+    query = query.eq('is_active', true);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return data || [];
 };
@@ -56,13 +60,17 @@ export const deleteService = async (id: string): Promise<void> => {
 };
 
 // Testimonials API
-export const getTestimonials = async (): Promise<Testimonial[]> => {
-  const { data, error } = await supabase
+export const getTestimonials = async (activeOnly: boolean = true): Promise<Testimonial[]> => {
+  let query = supabase
     .from('testimonials')
     .select('*')
-    .eq('is_active', true)
     .order('sort_order', { ascending: true });
 
+  if (activeOnly) {
+    query = query.eq('is_active', true);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return data || [];
 };

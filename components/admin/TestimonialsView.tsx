@@ -214,7 +214,7 @@ const TestimonialsView: React.FC = () => {
     const fetchTestimonials = async () => {
         setLoading(true);
         try {
-            const data = await getTestimonials();
+            const data = await getTestimonials(false);
             setTestimonials(data);
         } catch (error) {
             console.error('Error fetching testimonials:', error);
