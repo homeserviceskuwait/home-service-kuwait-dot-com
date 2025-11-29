@@ -2,17 +2,17 @@ import { GoogleGenAI, Chat } from "@google/genai";
 
 // Initialize the API client. 
 // Note: process.env.API_KEY is assumed to be available as per instructions.
-const apiKey = process.env.API_KEY || ''; 
+const apiKey = process.env.API_KEY || '';
 
 // We handle the case where the key might be missing gracefully in the UI, 
 // but here we just instantiate.
 const ai = new GoogleGenAI({ apiKey });
 
 const SYSTEM_INSTRUCTION = `
-You are "Hani", the expert AI consultant for Home Setup Kuwait. 
+You are "Hani", the expert AI consultant for Home Service Kuwait. 
 Your goal is to help customers plan their smart home and security installations in Kuwait.
 
-About Home Setup Kuwait:
+About Home Service Kuwait:
 - 7 Years of experience in the industry.
 - Team of experts in technical setup.
 - Focus: Smart home appliances and security systems.

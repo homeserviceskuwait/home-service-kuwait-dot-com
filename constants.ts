@@ -1,6 +1,6 @@
 import { Service, Testimonial, BlogPost } from './types';
 
-export const APP_NAME_EN = "Home Setup Kuwait";
+export const APP_NAME_EN = "Home Service Kuwait";
 export const APP_NAME_AR = "تجهيزات المنزل الكويت";
 export const PHONE_NUMBER = "+965 55791121";
 
@@ -225,7 +225,7 @@ const TESTIMONIALS_EN: Testimonial[] = [
     id: '1',
     name: 'Abdullah Al-Zad',
     role: 'Businessman',
-    comment: 'I own three commercial buildings. Home Setup Kuwait maintains them regularly. Any need is addressed immediately upon contact. Moreover, their support is excellent.',
+    comment: 'I own three commercial buildings. Home Service Kuwait maintains them regularly. Any need is addressed immediately upon contact. Moreover, their support is excellent.',
     rating: 5
   },
   {

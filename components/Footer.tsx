@@ -160,7 +160,7 @@ const Footer: React.FC = () => {
 
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-400 dark:text-slate-500">
           <div className="text-center md:text-left mb-4 md:mb-0 flex flex-col gap-1">
-            <p>&copy; {new Date().getFullYear()} Home Setup Kuwait. {content.rights}</p>
+            <p>&copy; {new Date().getFullYear()} Home Service Kuwait. {content.rights}</p>
             <p>
               Designed and Developed by <a href="https://wa.me/8801600086773" target="_blank" rel="noopener noreferrer" className="font-medium text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors">Al Mamun Sikder</a>
             </p>
