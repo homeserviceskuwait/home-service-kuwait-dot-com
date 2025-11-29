@@ -34,7 +34,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose }) => {
             {/* Sidebar */}
             <div className={`
                 fixed md:static inset-y-0 left-0 z-50
-                w-64 bg-slate-900 text-white min-h-screen p-6 flex flex-col
+                w-64 bg-slate-900 text-white h-full flex flex-col overflow-y-auto p-6
                 transform transition-transform duration-300 ease-in-out
                 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
             `}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Star } from 'lucide-react';
 import { useLanguage } from '../../LanguageContext';
 import { Testimonial } from '../../services/supabase';
 import { getTestimonials, createTestimonial, updateTestimonial, deleteTestimonial } from '../../services/apiService';
@@ -261,73 +261,134 @@ const TestimonialsView: React.FC = () => {
             />
 
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                <table className="w-full text-left text-sm">
-                    <thead className="bg-slate-50 text-slate-500">
-                        <tr>
-                            <th className="px-6 py-4 font-semibold">Name</th>
-                            <th className="px-6 py-4 font-semibold">Role</th>
-                            <th className="px-6 py-4 font-semibold">Rating</th>
-                            <th className="px-6 py-4 font-semibold text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                        {loading ? (
-                            // Loading skeleton
-                            Array.from({ length: 3 }).map((_, index) => (
-                                <tr key={index}>
-                                    <td className="px-6 py-4">
-                                        <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded w-16"></div>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            testimonials.map(t => (
-                                <tr key={t.id} className="hover:bg-slate-50/50">
-                                    <td className="px-6 py-4 font-medium text-slate-900">
-                                        {language === 'ar' ? t.name_ar : t.name}
-                                    </td>
-                                    <td className="px-6 py-4 text-slate-500">
-                                        {language === 'ar' ? t.role_ar : t.role}
-                                    </td>
-                                    <td className="px-6 py-4 text-yellow-500">{'★'.repeat(t.rating)}</td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button
-                                            onClick={() => handleEdit(t)}
-                                            className="text-teal-600 font-bold text-xs hover:underline mr-3"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={async () => {
-                                                if (window.confirm('Are you sure you want to delete this testimonial?')) {
-                                                    try {
-                                                        await deleteTestimonial(t.id);
-                                                        fetchTestimonials();
-                                                    } catch (error) {
-                                                        console.error('Error deleting testimonial:', error);
-                                                        alert('Error deleting testimonial');
+                {/* Desktop Table View */}
+                <div className="hidden md:block">
+                    <table className="w-full text-left text-sm">
+                        <thead className="bg-slate-50 text-slate-500">
+                            <tr>
+                                <th className="px-6 py-4 font-semibold">Name</th>
+                                <th className="px-6 py-4 font-semibold">Role</th>
+                                <th className="px-6 py-4 font-semibold">Rating</th>
+                                <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                            {loading ? (
+                                // Loading skeleton
+                                Array.from({ length: 3 }).map((_, index) => (
+                                    <tr key={index}>
+                                        <td className="px-6 py-4">
+                                            <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded w-16"></div>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                testimonials.map(t => (
+                                    <tr key={t.id} className="hover:bg-slate-50/50">
+                                        <td className="px-6 py-4 font-medium text-slate-900">{language === 'ar' ? t.name_ar : t.name}</td>
+                                        <td className="px-6 py-4 text-slate-500">{language === 'ar' ? t.role_ar : t.role}</td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex text-yellow-400">
+                                                {Array.from({ length: t.rating }).map((_, i) => (
+                                                    <Star key={i} className="w-4 h-4 fill-current" />
+                                                ))}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button
+                                                onClick={() => handleEdit(t)}
+                                                className="text-teal-600 font-bold text-xs hover:underline mr-3"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={async () => {
+                                                    if (window.confirm('Are you sure you want to delete this testimonial?')) {
+                                                        try {
+                                                            await deleteTestimonial(t.id);
+                                                            fetchTestimonials();
+                                                        } catch (error) {
+                                                            console.error('Error deleting testimonial:', error);
+                                                            alert('Error deleting testimonial');
+                                                        }
                                                     }
+                                                }}
+                                                className="text-red-500 font-bold text-xs hover:underline"
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Mobile Card View */}
+                <div className="md:hidden divide-y divide-slate-100">
+                    {loading ? (
+                        Array.from({ length: 3 }).map((_, index) => (
+                            <div key={index} className="p-4 animate-pulse space-y-3">
+                                <div className="h-4 bg-slate-200 rounded w-1/2"></div>
+                                <div className="h-3 bg-slate-200 rounded w-3/4"></div>
+                            </div>
+                        ))
+                    ) : (
+                        testimonials.map(t => (
+                            <div key={t.id} className="p-4 space-y-3">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h3 className="font-bold text-slate-900">
+                                            {language === 'ar' ? t.name_ar : t.name}
+                                        </h3>
+                                        <p className="text-sm text-slate-500">
+                                            {language === 'ar' ? t.role_ar : t.role}
+                                        </p>
+                                    </div>
+                                    <div className="flex text-yellow-400">
+                                        {Array.from({ length: t.rating }).map((_, i) => (
+                                            <Star key={i} className="w-3 h-3 fill-current" />
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="flex justify-end gap-3 pt-2">
+                                    <button
+                                        onClick={() => handleEdit(t)}
+                                        className="px-3 py-1.5 bg-teal-50 text-teal-600 rounded-lg text-xs font-bold"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={async () => {
+                                            if (window.confirm('Are you sure you want to delete this testimonial?')) {
+                                                try {
+                                                    await deleteTestimonial(t.id);
+                                                    fetchTestimonials();
+                                                } catch (error) {
+                                                    console.error('Error deleting testimonial:', error);
+                                                    alert('Error deleting testimonial');
                                                 }
-                                            }}
-                                            className="text-red-500 font-bold text-xs hover:underline"
-                                        >
-                                            Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                                            }
+                                        }}
+                                        className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-bold"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
         </div>
     )

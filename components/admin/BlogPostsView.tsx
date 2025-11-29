@@ -265,74 +265,135 @@ const BlogPostsView: React.FC = () => {
             />
 
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                <table className="w-full text-left text-sm">
-                    <thead className="bg-slate-50 text-slate-500">
-                        <tr>
-                            <th className="px-6 py-4 font-semibold">Title</th>
-                            <th className="px-6 py-4 font-semibold">Date</th>
-                            <th className="px-6 py-4 font-semibold">Excerpt</th>
-                            <th className="px-6 py-4 font-semibold text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                        {loading ? (
-                            // Loading skeleton
-                            Array.from({ length: 3 }).map((_, index) => (
-                                <tr key={index}>
-                                    <td className="px-6 py-4">
-                                        <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded w-16"></div>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            blogs.map(b => (
-                                <tr key={b.id} className="hover:bg-slate-50/50">
-                                    <td className="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
-                                        <img src={b.image_url} className="w-8 h-8 rounded-lg object-cover" alt="" />
-                                        {language === 'ar' ? b.title_ar : b.title_en}
-                                    </td>
-                                    <td className="px-6 py-4 text-slate-500">{b.date}</td>
-                                    <td className="px-6 py-4 text-slate-500 truncate max-w-xs">
-                                        {language === 'ar' ? b.excerpt_ar : b.excerpt_en}
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button
-                                            onClick={() => handleEdit(b)}
-                                            className="text-teal-600 font-bold text-xs hover:underline mr-3"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={async () => {
-                                                if (window.confirm('Are you sure you want to delete this post?')) {
-                                                    try {
-                                                        await deleteBlogPost(b.id);
-                                                        fetchBlogs();
-                                                    } catch (error) {
-                                                        console.error('Error deleting blog post:', error);
-                                                        alert('Error deleting blog post');
+                {/* Desktop Table View */}
+                <div className="hidden md:block">
+                    <table className="w-full text-left text-sm">
+                        <thead className="bg-slate-50 text-slate-500">
+                            <tr>
+                                <th className="px-6 py-4 font-semibold">Title</th>
+                                <th className="px-6 py-4 font-semibold">Date</th>
+                                <th className="px-6 py-4 font-semibold">Excerpt</th>
+                                <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                            {loading ? (
+                                // Loading skeleton
+                                Array.from({ length: 3 }).map((_, index) => (
+                                    <tr key={index}>
+                                        <td className="px-6 py-4">
+                                            <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="animate-pulse h-4 bg-slate-200 dark:bg-slate-700 rounded w-16"></div>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                blogs.map(b => (
+                                    <tr key={b.id} className="hover:bg-slate-50/50">
+                                        <td className="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
+                                            <img src={b.image_url} className="w-8 h-8 rounded-lg object-cover" alt="" />
+                                            {language === 'ar' ? b.title_ar : b.title_en}
+                                        </td>
+                                        <td className="px-6 py-4 text-slate-500">{b.date}</td>
+                                        <td className="px-6 py-4 text-slate-500 truncate max-w-xs">
+                                            {language === 'ar' ? b.excerpt_ar : b.excerpt_en}
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button
+                                                onClick={() => handleEdit(b)}
+                                                className="text-teal-600 font-bold text-xs hover:underline mr-3"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={async () => {
+                                                    if (window.confirm('Are you sure you want to delete this post?')) {
+                                                        try {
+                                                            await deleteBlogPost(b.id);
+                                                            fetchBlogs();
+                                                        } catch (error) {
+                                                            console.error('Error deleting blog post:', error);
+                                                            alert('Error deleting blog post');
+                                                        }
                                                     }
+                                                }}
+                                                className="text-red-500 font-bold text-xs hover:underline"
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Mobile Card View */}
+                <div className="md:hidden divide-y divide-slate-100">
+                    {loading ? (
+                        Array.from({ length: 3 }).map((_, index) => (
+                            <div key={index} className="p-4 animate-pulse space-y-3">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 bg-slate-200 rounded-lg"></div>
+                                    <div className="flex-1 space-y-2">
+                                        <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                                        <div className="h-3 bg-slate-200 rounded w-1/2"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        blogs.map(b => (
+                            <div key={b.id} className="p-4 space-y-3">
+                                <div className="flex items-start gap-3">
+                                    <img src={b.image_url} className="w-12 h-12 rounded-lg object-cover bg-slate-100" alt="" />
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="font-bold text-slate-900 truncate">
+                                            {language === 'ar' ? b.title_ar : b.title_en}
+                                        </h3>
+                                        <p className="text-xs text-slate-500 mt-1">{b.date}</p>
+                                        <p className="text-sm text-slate-500 line-clamp-2 mt-1">
+                                            {language === 'ar' ? b.excerpt_ar : b.excerpt_en}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex justify-end gap-3 pt-2">
+                                    <button
+                                        onClick={() => handleEdit(b)}
+                                        className="px-3 py-1.5 bg-teal-50 text-teal-600 rounded-lg text-xs font-bold"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={async () => {
+                                            if (window.confirm('Are you sure you want to delete this post?')) {
+                                                try {
+                                                    await deleteBlogPost(b.id);
+                                                    fetchBlogs();
+                                                } catch (error) {
+                                                    console.error('Error deleting blog post:', error);
+                                                    alert('Error deleting blog post');
                                                 }
-                                            }}
-                                            className="text-red-500 font-bold text-xs hover:underline"
-                                        >
-                                            Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                                            }
+                                        }}
+                                        className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-bold"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
         </div>
     )
