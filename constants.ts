@@ -301,8 +301,8 @@ export const BLOG_EN: BlogPost[] = [
     id: '3',
     title: 'Fiber optic landline phone repair technician',
     excerpt: 'High-quality installation and repair services with fast response times. We provide 24-hour home and office service.',
-    date: 'Dec 10, 2023',
-    imageUrl: 'https://images.unsplash.com/photo-1520869562399-e772f042f422?auto=format&fit=crop&q=80&w=600'
+    date: 'Nov 10, 2023',
+    imageUrl: 'https://images.unsplash.com/photo-1544197150-b99a580bbcbf?auto=format&fit=crop&q=80&w=600'
   }
 ];
 
@@ -310,23 +310,23 @@ export const BLOG_AR: BlogPost[] = [
   {
     id: '1',
     title: 'جهاز بصمة الحضور والانصراف',
-    excerpt: 'الحل الذكي لإدارة الوقت وزيادة الإنتاجية. أدوات أساسية تعتمد عليها الشركات لتحسين كفاءة الموارد البشرية.',
+    excerpt: 'الحل الذكي لإدارة الوقت وزيادة الإنتاجية. أدوات أساسية تعتمد عليها الشركات.',
     date: '١٥ أكتوبر ٢٠٢٣',
     imageUrl: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600'
   },
   {
     id: '2',
-    title: 'أفضل 10 كاميرات مراقبة في الكويت',
-    excerpt: 'الأمن لم يعد رفاهية، بل ضرورة. ضمان سلامة منزلك أو مكتبك أو عملك أصبح أولوية قصوى في الكويت.',
+    title: 'أفضل ١٠ كاميرات مراقبة في الكويت',
+    excerpt: 'الأمان لم يعد رفاهية، بل ضرورة. ضمان سلامة منزلك أو مكتبك أو عملك أصبح أولوية قصوى.',
     date: '٠٢ نوفمبر ٢٠٢٣',
     imageUrl: 'https://images.unsplash.com/photo-1557862921-37829c790f19?auto=format&fit=crop&q=80&w=600'
   },
   {
     id: '3',
     title: 'فني تصليح هواتف أرضية وفايبر',
-    excerpt: 'خدمات تركيب وإصلاح عالية الجودة مع استجابة سريعة. نقدم خدمة 24 ساعة للمنازل والمكاتب.',
-    date: '١٠ ديسمبر ٢٠٢٣',
-    imageUrl: 'https://images.unsplash.com/photo-1520869562399-e772f042f422?auto=format&fit=crop&q=80&w=600'
+    excerpt: 'خدمات تركيب وتصليح عالية الجودة مع استجابة سريعة. نقدم خدمة ٢٤ ساعة للمنازل والمكاتب.',
+    date: '١٠ نوفمبر ٢٠٢٣',
+    imageUrl: 'https://images.unsplash.com/photo-1544197150-b99a580bbcbf?auto=format&fit=crop&q=80&w=600'
   }
 ];
 
@@ -336,26 +336,36 @@ export const CONTENT = {
       home: 'Home',
       services: 'Services',
       whyUs: 'Why Us',
+      blog: 'Blog',
+      contact: 'Contact',
+      callNow: 'Call Now'
+    },
+    hero: {
+      tagline: 'Kuwait\'s #1 Home Service',
+      titleLine1: 'Smart Living',
+      titleLine2: 'Starts Here.',
+      description: '7 years of experience securing and upgrading homes across Kuwait. From CCTV to smart locks, we handle the tech so you enjoy the comfort.',
+      ctaCall: `Call ${PHONE_NUMBER}`,
       ctaServices: 'Explore Services',
       features: [
-        "Seven years of experience",
-        "Always-on customer support",
-        "Monthly maintenance subscription",
-        "Fully trained team",
-        "Frequent discounts",
-        "Five-star service"
+        "7 Years Experience",
+        "24/7 Support",
+        "Monthly Maintenance",
+        "Certified Team",
+        "Regular Discounts",
+        "5-Star Service"
       ],
       stats: {
         secure: 'System Secure',
         monitoring: 'Monitoring Active',
         fiveStar: '5-Star Service',
-        reviews: 'Based on 230+ Reviews'
+        reviews: 'Based on 230+ reviews'
       }
     },
     services: {
-      title: 'Professional Installation & Setup Services',
+      title: 'Professional Installation & Setup',
       subtitle: 'Our Expertise',
-      cta: 'Get a Custom Quote',
+      cta: 'Get a Quote',
       list: SERVICES_EN
     },
     whyUs: {

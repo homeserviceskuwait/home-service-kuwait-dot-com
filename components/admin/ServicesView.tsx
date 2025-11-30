@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Upload, X } from 'lucide-react';
+import { Plus, Search, Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { useLanguage } from '../../LanguageContext';
-import { Service } from '../../services/supabase';
+import { Service, supabase } from '../../services/supabase';
 import { getServices, createService, updateService, deleteService } from '../../services/apiService';
 
 const ServiceModal: React.FC<{
@@ -24,6 +24,7 @@ const ServiceModal: React.FC<{
         sort_order: 0,
     });
     const [loading, setLoading] = useState(false);
+    const [uploadingImage, setUploadingImage] = useState(false);
 
     useEffect(() => {
         if (service) {
@@ -51,6 +52,40 @@ const ServiceModal: React.FC<{
             });
         }
     }, [service, isOpen]);
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length === 0) {
+            return;
+        }
+
+        const file = e.target.files[0];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        setUploadingImage(true);
+
+        try {
+            const { error: uploadError } = await supabase.storage
+                .from('service-images')
+                .upload(filePath, file);
+
+            if (uploadError) {
+                throw uploadError;
+            }
+
+            const { data } = supabase.storage
+                .from('service-images')
+                .getPublicUrl(filePath);
+
+            setFormData(prev => ({ ...prev, image_url: data.publicUrl }));
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('Error uploading image');
+        } finally {
+            setUploadingImage(false);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -239,23 +274,51 @@ const ServiceModal: React.FC<{
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
-                            <div className="flex gap-2">
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Service Image</label>
+                            <div className="space-y-3">
+                                {formData.image_url && (
+                                    <div className="relative w-full h-40 bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
+                                        <img 
+                                            src={formData.image_url} 
+                                            alt="Service preview" 
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, image_url: '' })}
+                                            className="absolute top-2 right-2 p-1 bg-white/80 rounded-full hover:bg-white text-slate-600 transition-colors"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                )}
+                                
+                                <div className="flex gap-2">
+                                    <label className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 border-dashed rounded-lg cursor-pointer hover:bg-slate-100 transition-colors ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                        {uploadingImage ? (
+                                            <Loader2 className="w-5 h-5 text-teal-600 animate-spin" />
+                                        ) : (
+                                            <Upload className="w-5 h-5 text-slate-400" />
+                                        )}
+                                        <span className="text-sm text-slate-600">
+                                            {uploadingImage ? 'Uploading...' : 'Upload Image'}
+                                        </span>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageUpload}
+                                            disabled={uploadingImage}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                </div>
                                 <input
                                     type="text"
-                                    required
+                                    placeholder="Or enter image URL directly"
                                     value={formData.image_url || ''}
                                     onChange={e => setFormData({ ...formData, image_url: e.target.value })}
-                                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none text-sm"
                                 />
-                                <a
-                                    href={formData.image_url}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
-                                >
-                                    <Upload className="w-5 h-5 text-slate-600" />
-                                </a>
                             </div>
                         </div>
                         <div>
@@ -300,7 +363,7 @@ const ServiceModal: React.FC<{
                         </button>
                         <button
                             type="submit"
-                            disabled={loading}
+                            disabled={loading || uploadingImage}
                             className="px-6 py-2 rounded-xl bg-teal-600 text-white font-bold hover:bg-teal-700 transition-colors disabled:opacity-50"
                         >
                             {loading ? 'Saving...' : 'Save Service'}
@@ -424,7 +487,13 @@ const ServicesView: React.FC = () => {
                                 filteredServices.map(s => (
                                     <tr key={s.id} className="hover:bg-slate-50/50">
                                         <td className="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
-                                            <img src={s.image_url} className="w-8 h-8 rounded-lg object-cover" alt="" />
+                                            {s.image_url ? (
+                                                <img src={s.image_url} className="w-10 h-10 rounded-lg object-cover bg-slate-100" alt="" />
+                                            ) : (
+                                                <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400">
+                                                    <ImageIcon className="w-5 h-5" />
+                                                </div>
+                                            )}
                                             {language === 'ar' ? s.title_ar : s.title_en}
                                         </td>
                                         <td className="px-6 py-4 text-slate-500">{s.category}</td>
@@ -478,7 +547,13 @@ const ServicesView: React.FC = () => {
                         filteredServices.map(s => (
                             <div key={s.id} className="p-4 space-y-3">
                                 <div className="flex items-start gap-3">
-                                    <img src={s.image_url} className="w-12 h-12 rounded-lg object-cover bg-slate-100" alt="" />
+                                    {s.image_url ? (
+                                        <img src={s.image_url} className="w-12 h-12 rounded-lg object-cover bg-slate-100" alt="" />
+                                    ) : (
+                                        <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400">
+                                            <ImageIcon className="w-6 h-6" />
+                                        </div>
+                                    )}
                                     <div className="flex-1 min-w-0">
                                         <h3 className="font-bold text-slate-900 truncate">
                                             {language === 'ar' ? s.title_ar : s.title_en}
