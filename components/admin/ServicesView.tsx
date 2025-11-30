@@ -278,9 +278,9 @@ const ServiceModal: React.FC<{
                             <div className="space-y-3">
                                 {formData.image_url && (
                                     <div className="relative w-full h-40 bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
-                                        <img 
-                                            src={formData.image_url} 
-                                            alt="Service preview" 
+                                        <img
+                                            src={formData.image_url}
+                                            alt="Service preview"
                                             className="w-full h-full object-cover"
                                         />
                                         <button
@@ -292,7 +292,7 @@ const ServiceModal: React.FC<{
                                         </button>
                                     </div>
                                 )}
-                                
+
                                 <div className="flex gap-2">
                                     <label className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 border-dashed rounded-lg cursor-pointer hover:bg-slate-100 transition-colors ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''}`}>
                                         {uploadingImage ? (
@@ -322,14 +322,88 @@ const ServiceModal: React.FC<{
                             </div>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Project Gallery Images (One URL per line)</label>
-                            <textarea
-                                rows={4}
-                                value={formData.gallery_images?.join('\n') || ''}
-                                onChange={e => setFormData({ ...formData, gallery_images: e.target.value.split('\n') })}
-                                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
-                                placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"
-                            />
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Project Gallery Images (Max 5)</label>
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                    {formData.gallery_images?.map((img, idx) => (
+                                        <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-slate-200 group">
+                                            <img src={img} alt={`Gallery ${idx}`} className="w-full h-full object-cover" />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const newGallery = [...(formData.gallery_images || [])];
+                                                    newGallery.splice(idx, 1);
+                                                    setFormData({ ...formData, gallery_images: newGallery });
+                                                }}
+                                                className="absolute top-1 right-1 p-1 bg-white/80 rounded-full hover:bg-white text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    {(formData.gallery_images?.length || 0) < 5 && (
+                                        <label className={`flex flex-col items-center justify-center aspect-square bg-slate-50 border border-slate-200 border-dashed rounded-lg cursor-pointer hover:bg-slate-100 transition-colors ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                            {uploadingImage ? (
+                                                <Loader2 className="w-6 h-6 text-teal-600 animate-spin" />
+                                            ) : (
+                                                <Plus className="w-6 h-6 text-slate-400" />
+                                            )}
+                                            <span className="text-xs text-slate-500 mt-2">Add Image</span>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                multiple
+                                                onChange={async (e) => {
+                                                    if (!e.target.files || e.target.files.length === 0) return;
+
+                                                    const files = Array.from(e.target.files) as File[];
+                                                    const currentCount = formData.gallery_images?.length || 0;
+                                                    const remainingSlots = 5 - currentCount;
+
+                                                    if (files.length > remainingSlots) {
+                                                        alert(`You can only upload ${remainingSlots} more image(s).`);
+                                                        return;
+                                                    }
+
+                                                    setUploadingImage(true);
+                                                    const newImages: string[] = [];
+
+                                                    try {
+                                                        for (const file of files) {
+                                                            const fileExt = file.name.split('.').pop();
+                                                            const fileName = `gallery_${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+
+                                                            const { error: uploadError } = await supabase.storage
+                                                                .from('service-images')
+                                                                .upload(fileName, file);
+
+                                                            if (uploadError) throw uploadError;
+
+                                                            const { data } = supabase.storage
+                                                                .from('service-images')
+                                                                .getPublicUrl(fileName);
+
+                                                            newImages.push(data.publicUrl);
+                                                        }
+
+                                                        setFormData(prev => ({
+                                                            ...prev,
+                                                            gallery_images: [...(prev.gallery_images || []), ...newImages]
+                                                        }));
+                                                    } catch (error) {
+                                                        console.error('Error uploading gallery images:', error);
+                                                        alert('Error uploading images');
+                                                    } finally {
+                                                        setUploadingImage(false);
+                                                    }
+                                                }}
+                                                disabled={uploadingImage}
+                                                className="hidden"
+                                            />
+                                        </label>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">Sort Order</label>
