@@ -1,7 +1,19 @@
 {
     "rewrites": [
         {
-            "source": "/((?!assets/|sitemap.xml|robots.txt|favicon.ico|manifest.json).*)",
+            "source": "/sitemap.xml",
+            "destination": "/sitemap.xml"
+        },
+        {
+            "source": "/robots.txt",
+            "destination": "/robots.txt"
+        },
+        {
+            "source": "/assets/(.*)",
+            "destination": "/assets/$1"
+        },
+        {
+            "source": "/(.*)",
             "destination": "/index.html"
         }
     ]
