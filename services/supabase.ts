@@ -32,6 +32,12 @@ export interface Service {
   sort_order: number;
   created_at: string;
   updated_at: string;
+  meta_title_en?: string;
+  meta_title_ar?: string;
+  meta_description_en?: string;
+  meta_description_ar?: string;
+  meta_keywords_en?: string;
+  meta_keywords_ar?: string;
 }
 
 export interface Testimonial {
@@ -66,6 +72,12 @@ export interface BlogPost {
   slug: string;
   created_at: string;
   updated_at: string;
+  meta_title_en?: string;
+  meta_title_ar?: string;
+  meta_description_en?: string;
+  meta_description_ar?: string;
+  meta_keywords_en?: string;
+  meta_keywords_ar?: string;
 }
 
 export interface ServiceRequest {
@@ -116,6 +128,12 @@ export interface Product {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  meta_title_en?: string;
+  meta_title_ar?: string;
+  meta_description_en?: string;
+  meta_description_ar?: string;
+  meta_keywords_en?: string;
+  meta_keywords_ar?: string;
 }
 
 export interface Order {

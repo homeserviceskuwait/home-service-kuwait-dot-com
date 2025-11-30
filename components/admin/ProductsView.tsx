@@ -32,7 +32,13 @@ const ProductsView: React.FC = () => {
         category: 'Uncategorized',
         image_url: '',
         stock: 0,
-        is_active: true
+        is_active: true,
+        meta_title_en: '',
+        meta_title_ar: '',
+        meta_description_en: '',
+        meta_description_ar: '',
+        meta_keywords_en: '',
+        meta_keywords_ar: ''
     });
 
     useEffect(() => {
@@ -61,7 +67,13 @@ const ProductsView: React.FC = () => {
             category: product.category,
             image_url: product.image_url,
             stock: product.stock,
-            is_active: product.is_active
+            is_active: product.is_active,
+            meta_title_en: product.meta_title_en || '',
+            meta_title_ar: product.meta_title_ar || '',
+            meta_description_en: product.meta_description_en || '',
+            meta_description_ar: product.meta_description_ar || '',
+            meta_keywords_en: product.meta_keywords_en || '',
+            meta_keywords_ar: product.meta_keywords_ar || ''
         });
         setIsModalOpen(true);
     };
@@ -134,7 +146,13 @@ const ProductsView: React.FC = () => {
             category: 'Uncategorized',
             image_url: '',
             stock: 0,
-            is_active: true
+            is_active: true,
+            meta_title_en: '',
+            meta_title_ar: '',
+            meta_description_en: '',
+            meta_description_ar: '',
+            meta_keywords_en: '',
+            meta_keywords_ar: ''
         });
     };
 

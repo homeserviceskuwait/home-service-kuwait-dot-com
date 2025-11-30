@@ -8,6 +8,8 @@ import { BlogPost } from '../services/supabase';
 import { getBlogPosts } from '../services/apiService';
 import Pagination from '../components/Pagination';
 
+import SEO from '../components/SEO';
+
 const Blog: React.FC = () => {
     const { language, isRTL } = useLanguage();
     const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -39,6 +41,10 @@ const Blog: React.FC = () => {
 
     return (
         <div className={`min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-white transition-colors duration-300 ${isRTL ? 'font-arabic' : 'font-sans'}`}>
+            <SEO
+                title={language === 'en' ? 'Blog - Home Service Kuwait' : 'المدونة - خدمة المنزل الكويت'}
+                description={language === 'en' ? 'Latest news, tips, and insights about home maintenance and services.' : 'أحدث الأخبار والنصائح والرؤى حول صيانة المنزل والخدمات.'}
+            />
             <Header />
 
             <main className="pt-24 pb-16">

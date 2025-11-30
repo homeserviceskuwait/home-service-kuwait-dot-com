@@ -27,6 +27,12 @@ const BlogPostModal: React.FC<{
             slug: '',
             is_published: true,
             sort_order: 0,
+            meta_title_en: '',
+            meta_title_ar: '',
+            meta_description_en: '',
+            meta_description_ar: '',
+            meta_keywords_en: '',
+            meta_keywords_ar: ''
         };
     });
     const [loading, setLoading] = useState(false);
@@ -46,6 +52,12 @@ const BlogPostModal: React.FC<{
                 slug: '',
                 is_published: true,
                 sort_order: 0,
+                meta_title_en: '',
+                meta_title_ar: '',
+                meta_description_en: '',
+                meta_description_ar: '',
+                meta_keywords_en: '',
+                meta_keywords_ar: ''
             });
         }
     }, [post]);
@@ -386,6 +398,7 @@ const BlogPostModal: React.FC<{
                                 className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
                             />
                         </div>
+
                         <div className="flex items-center pt-6">
                             <label className="flex items-center gap-3 cursor-pointer">
                                 <input

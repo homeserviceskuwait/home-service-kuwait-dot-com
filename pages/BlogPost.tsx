@@ -7,6 +7,8 @@ import { useLanguage } from '../LanguageContext';
 import { BlogPost as BlogPostType } from '../services/supabase';
 import { getBlogPosts } from '../services/apiService';
 
+import SEO from '../components/SEO';
+
 const BlogPost: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const navigate = useNavigate();
@@ -52,6 +54,15 @@ const BlogPost: React.FC = () => {
 
     return (
         <div className={`min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-white transition-colors duration-300 ${isRTL ? 'font-arabic' : 'font-sans'}`}>
+            <SEO
+                title={language === 'ar' ? (post.meta_title_ar || post.title_ar) : (post.meta_title_en || post.title_en)}
+                description={language === 'ar' ? (post.meta_description_ar || post.excerpt_ar) : (post.meta_description_en || post.excerpt_en)}
+                keywords={language === 'ar' ? post.meta_keywords_ar : post.meta_keywords_en}
+                image={post.image_url}
+                url={`/blog/${post.slug}`}
+                type="article"
+                lang={language}
+            />
             <Header />
 
             <main className="pt-24 pb-16">

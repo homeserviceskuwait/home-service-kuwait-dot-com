@@ -15,18 +15,19 @@ import { Service, Testimonial as TestimonialType, BlogPost } from '../services/s
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
 import ServiceRequestModal from '../components/ServiceRequestModal';
 import Pagination from '../components/Pagination';
+import SEO from '../components/SEO';
 
 const Home: React.FC = () => {
     const { language, isRTL } = useLanguage();
     const content = CONTENT[language];
     const location = useLocation();
     const navigate = useNavigate();
+    const { settings } = useSiteSettings();
 
     // State for dynamic content
     const [services, setServices] = useState<Service[]>([]);
     const [testimonials, setTestimonials] = useState<TestimonialType[]>([]);
     const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
-    const { settings } = useSiteSettings();
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
         name: '',
@@ -39,6 +40,7 @@ const Home: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedService, setSelectedService] = useState<Service | null>(null);
     const [blogPage, setBlogPage] = useState(1);
+
     const currentBlogPosts = blogPosts.slice((blogPage - 1) * 6, blogPage * 6);
 
     useEffect(() => {
@@ -82,6 +84,10 @@ const Home: React.FC = () => {
         return (LucideIcons as any)[iconName] || LucideIcons.HelpCircle;
     };
 
+    const handleServiceClick = (service: Service) => {
+        navigate(`/services/${service.id}`);
+    };
+
     // Handle form submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -109,17 +115,13 @@ const Home: React.FC = () => {
         }
     };
 
-    const handleServiceClick = (service: Service) => {
-        navigate(`/services/${service.id}`);
-    };
-
     return (
-        <div className={`min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-white overflow-x-hidden transition-colors duration-300 ${isRTL ? 'font-arabic' : 'font-sans'}`}>
+        <div className={`min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+            <SEO />
             <Header />
+            <Hero />
 
             <main>
-                <Hero services={services} />
-
                 {/* Stats Section */}
                 <div className="container mx-auto px-4 -mt-10 relative z-20">
                     <div className="bg-slate-900 dark:bg-slate-800 text-white rounded-3xl p-8 md:p-12 shadow-2xl shadow-slate-900/10 dark:shadow-black/20 transition-colors duration-300">
@@ -439,6 +441,6 @@ const Home: React.FC = () => {
             <Footer />
         </div>
     );
-}
+};
 
 export default Home;

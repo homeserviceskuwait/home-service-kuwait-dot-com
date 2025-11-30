@@ -23,6 +23,8 @@ const CATEGORIES = [
 
 const ITEMS_PER_PAGE = 12;
 
+import SEO from '../components/SEO';
+
 const Shop: React.FC = () => {
     const { language, isRTL } = useLanguage();
     const [products, setProducts] = useState<Product[]>([]);
@@ -69,6 +71,10 @@ const Shop: React.FC = () => {
 
     return (
         <div className={`min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-white transition-colors duration-300 ${isRTL ? 'font-arabic' : 'font-sans'}`}>
+            <SEO
+                title={language === 'en' ? 'Shop - Home Service Kuwait' : 'المتجر - خدمة المنزل الكويت'}
+                description={language === 'en' ? 'Browse our collection of high-quality home service products.' : 'تصفح مجموعتنا من منتجات الخدمات المنزلية عالية الجودة.'}
+            />
             <Header />
 
             <main className="pt-24 pb-16">

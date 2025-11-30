@@ -305,7 +305,7 @@ export const createSiteSetting = async (setting: Omit<SiteSetting, 'id' | 'creat
 };
 
 // Utility functions
-export const getLocalizedContent = (item: Service | Testimonial | BlogPost, language: 'en' | 'ar') => {
+export const getLocalizedContent = (item: Service | Testimonial | BlogPost | Product, language: 'en' | 'ar') => {
   if (language === 'ar') {
     return {
       ...item,
@@ -314,6 +314,9 @@ export const getLocalizedContent = (item: Service | Testimonial | BlogPost, lang
       excerpt: (item as any).excerpt_ar || (item as any).excerpt,
       content: (item as any).content_ar || (item as any).content,
       price_start: (item as any).price_start_ar || (item as any).price_start,
+      meta_title: (item as any).meta_title_ar || (item as any).meta_title_en,
+      meta_description: (item as any).meta_description_ar || (item as any).meta_description_en,
+      meta_keywords: (item as any).meta_keywords_ar || (item as any).meta_keywords_en,
     };
   }
   return {
@@ -323,6 +326,9 @@ export const getLocalizedContent = (item: Service | Testimonial | BlogPost, lang
     excerpt: (item as any).excerpt_en || (item as any).excerpt,
     content: (item as any).content_en || (item as any).content,
     price_start: (item as any).price_start_en || (item as any).price_start,
+    meta_title: (item as any).meta_title_en,
+    meta_description: (item as any).meta_description_en,
+    meta_keywords: (item as any).meta_keywords_en,
   };
 };
 

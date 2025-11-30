@@ -8,6 +8,8 @@ import { getProductById } from '../services/apiService';
 import { useCart } from '../contexts/CartContext';
 import { ShoppingCart, ArrowLeft, Loader2 } from 'lucide-react';
 
+import SEO from '../components/SEO';
+
 const ProductDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -56,6 +58,15 @@ const ProductDetails: React.FC = () => {
 
     return (
         <div className={`min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-white transition-colors duration-300 ${isRTL ? 'font-arabic' : 'font-sans'}`}>
+            <SEO
+                title={language === 'ar' ? (product.meta_title_ar || product.title_ar) : (product.meta_title_en || product.title_en)}
+                description={language === 'ar' ? (product.meta_description_ar || product.description_ar) : (product.meta_description_en || product.description_en)}
+                keywords={language === 'ar' ? product.meta_keywords_ar : product.meta_keywords_en}
+                image={product.image_url}
+                url={`/shop/${product.id}`}
+                type="product"
+                lang={language}
+            />
             <Header />
 
             <main className="pt-24 pb-16">
