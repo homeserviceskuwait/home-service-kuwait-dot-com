@@ -61,6 +61,28 @@ export interface BlogPost {
   image_url: string;
   gallery_images?: string[];
   date: string;
+  is_published: boolean;
+  sort_order: number;
+  slug: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ServiceRequest {
+  id: string;
+  customer_name: string;
+  customer_phone: string;
+  service_id: string;
+  service_type: string;
+  message: string;
+  status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
   name?: string;
   role: 'admin' | 'super_admin';
   is_active: boolean;
@@ -77,6 +99,38 @@ export interface SiteSetting {
   type: 'text' | 'number' | 'boolean' | 'json';
   description?: string;
   is_public: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Product {
+  id: string;
+  title_en: string;
+  title_ar: string;
+  description_en: string;
+  description_ar: string;
+  price: number;
+  image_url: string;
+  category: string;
+  stock: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Order {
+  id: string;
+  customer_name: string;
+  customer_phone: string;
+  customer_address: string;
+  items: {
+    product_id: string;
+    product_title: string;
+    quantity: number;
+    price: number;
+  }[];
+  total_amount: number;
+  status: 'pending' | 'processing' | 'completed' | 'cancelled';
   created_at: string;
   updated_at: string;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, ClipboardList, FileText, MessageSquare, Settings, LogOut, X } from 'lucide-react';
+import { LayoutDashboard, Package, ClipboardList, FileText, MessageSquare, Settings, LogOut, X, ShoppingBag, ShoppingCart } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import Logo from '../Logo';
 
@@ -67,6 +67,22 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose }) => {
                     >
                         <Package className="w-5 h-5" />
                         Services
+                    </Link>
+                    <Link
+                        to="/admin/products"
+                        onClick={() => onClose()}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive('/admin/products') ? 'bg-teal-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}
+                    >
+                        <ShoppingBag className="w-5 h-5" />
+                        Products
+                    </Link>
+                    <Link
+                        to="/admin/orders"
+                        onClick={() => onClose()}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive('/admin/orders') ? 'bg-teal-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}
+                    >
+                        <ShoppingCart className="w-5 h-5" />
+                        Orders
                     </Link>
                     <Link
                         to="/admin/requests"

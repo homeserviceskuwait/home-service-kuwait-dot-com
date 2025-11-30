@@ -6,6 +6,8 @@ import { Menu } from 'lucide-react';
 import AdminSidebar from '../components/admin/AdminSidebar';
 import DashboardView from '../components/admin/DashboardView';
 import ServicesView from '../components/admin/ServicesView';
+import ProductsView from '../components/admin/ProductsView';
+import OrdersView from '../components/admin/OrdersView';
 import RequestsView from '../components/admin/RequestsView';
 import BlogPostsView from '../components/admin/BlogPostsView';
 import TestimonialsView from '../components/admin/TestimonialsView';
@@ -56,6 +58,8 @@ const Admin: React.FC = () => {
           <Routes>
             <Route path="dashboard" element={<DashboardView />} />
             <Route path="services" element={<ServicesView />} />
+            <Route path="products" element={<ProductsView />} />
+            <Route path="orders" element={<OrdersView />} />
             <Route path="requests" element={<RequestsView />} />
             <Route path="blogs" element={<BlogPostsView />} />
             <Route path="testimonials" element={<TestimonialsView />} />

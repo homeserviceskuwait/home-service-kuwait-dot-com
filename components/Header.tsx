@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, Phone, ChevronRight, Globe, Moon, Sun, ChevronDown } from 'lucide-react';
+import { Menu, X, Phone, ChevronRight, Globe, Moon, Sun, ChevronDown, ShoppingCart } from 'lucide-react';
 import { PHONE_NUMBER, CONTENT } from '../constants';
 import { useLanguage } from '../LanguageContext';
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
+import { useCart } from '../contexts/CartContext';
 import Logo from './Logo';
 import AppName from './AppName';
 import { Link } from 'react-router-dom';
@@ -12,6 +13,7 @@ import { Service } from '../services/supabase';
 const Header: React.FC = () => {
   const { language, setLanguage, isRTL, theme, toggleTheme } = useLanguage();
   const { settings } = useSiteSettings();
+  const { totalItems } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -57,6 +59,7 @@ const Header: React.FC = () => {
   const navLinks = [
     { name: content.nav.home, href: '/' },
     { name: content.nav.services, href: '/#services', isDropdown: true },
+    { name: language === 'en' ? 'Shop' : 'المتجر', href: '/shop' },
     { name: content.nav.whyUs, href: '/#features' },
     { name: content.nav.blog, href: '/blog' },
     { name: content.nav.contact, href: '/#contact' },
@@ -133,6 +136,20 @@ const Header: React.FC = () => {
             </nav>
 
             <div className="hidden lg:flex items-center gap-2">
+              {/* Cart Icon */}
+              <Link
+                to="/cart"
+                className="relative p-3 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                aria-label="Cart"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {totalItems > 0 && (
+                  <span className="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                    {totalItems}
+                  </span>
+                )}
+              </Link>
+
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
@@ -163,6 +180,17 @@ const Header: React.FC = () => {
 
             {/* Mobile Menu Button */}
             <div className="flex items-center gap-2 lg:hidden">
+              <Link
+                to="/cart"
+                className="relative p-2 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {totalItems > 0 && (
+                  <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                    {totalItems}
+                  </span>
+                )}
+              </Link>
               <button
                 onClick={toggleTheme}
                 className="p-2 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
