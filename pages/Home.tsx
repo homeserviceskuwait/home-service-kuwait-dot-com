@@ -14,6 +14,7 @@ import { getServices, getTestimonials, getBlogPosts, createServiceRequest } from
 import { Service, Testimonial as TestimonialType, BlogPost } from '../services/supabase';
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
 import ServiceRequestModal from '../components/ServiceRequestModal';
+import Pagination from '../components/Pagination';
 
 const Home: React.FC = () => {
     const { language, isRTL } = useLanguage();
@@ -37,6 +38,8 @@ const Home: React.FC = () => {
     const [submitMessage, setSubmitMessage] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedService, setSelectedService] = useState<Service | null>(null);
+    const [blogPage, setBlogPage] = useState(1);
+    const currentBlogPosts = blogPosts.slice((blogPage - 1) * 6, blogPage * 6);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -248,7 +251,7 @@ const Home: React.FC = () => {
                                     </article>
                                 ))
                             ) : (
-                                blogPosts.map((post) => (
+                                currentBlogPosts.map((post) => (
                                     <article
                                         key={post.id}
                                         onClick={() => navigate(`/blog/${post.slug}`)}
@@ -275,6 +278,14 @@ const Home: React.FC = () => {
                                 ))
                             )}
                         </div>
+
+                        {!loading && blogPosts.length > 6 && (
+                            <Pagination
+                                currentPage={blogPage}
+                                totalPages={Math.ceil(blogPosts.length / 6)}
+                                onPageChange={setBlogPage}
+                            />
+                        )}
                     </div>
                 </section>
 
@@ -416,7 +427,7 @@ const Home: React.FC = () => {
                         </div>
                     </div>
                 </section>
-            </main >
+            </main>
 
             <ServiceRequestModal
                 isOpen={isModalOpen}
@@ -426,7 +437,7 @@ const Home: React.FC = () => {
             />
 
             <Footer />
-        </div >
+        </div>
     );
 }
 

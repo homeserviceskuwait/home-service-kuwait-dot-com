@@ -6,12 +6,14 @@ import Footer from '../components/Footer';
 import { useLanguage } from '../LanguageContext';
 import { BlogPost } from '../services/supabase';
 import { getBlogPosts } from '../services/apiService';
+import Pagination from '../components/Pagination';
 
 const Blog: React.FC = () => {
     const { language, isRTL } = useLanguage();
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -32,6 +34,8 @@ const Blog: React.FC = () => {
         (language === 'ar' ? post.title_ar : post.title_en)?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (language === 'ar' ? post.excerpt_ar : post.excerpt_en)?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const currentPosts = filteredPosts.slice((currentPage - 1) * 10, currentPage * 10);
 
     return (
         <div className={`min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-white transition-colors duration-300 ${isRTL ? 'font-arabic' : 'font-sans'}`}>
@@ -59,7 +63,10 @@ const Blog: React.FC = () => {
                             type="text"
                             placeholder={language === 'en' ? 'Search articles...' : 'بحث في المقالات...'}
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value);
+                                setCurrentPage(1); // Reset to first page on search
+                            }}
                             className="w-full px-6 py-4 pl-12 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-teal-500 outline-none transition-all"
                         />
                         <Search className={`absolute top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 ${isRTL ? 'right-4' : 'left-4'}`} />
@@ -78,39 +85,52 @@ const Blog: React.FC = () => {
                             ))}
                         </div>
                     ) : filteredPosts.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {filteredPosts.map(post => (
-                                <Link
-                                    to={`/blog/${post.slug}`}
-                                    key={post.id}
-                                    className="group bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-100 dark:border-slate-800 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/30 transition-all duration-300 hover:-translate-y-1"
-                                >
-                                    <div className="relative h-56 overflow-hidden">
-                                        <img
-                                            src={post.image_url}
-                                            alt={language === 'ar' ? post.title_ar : post.title_en}
-                                            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
-                                        />
-                                        <div className="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                                            <Calendar className="w-3 h-3" />
-                                            {post.date}
+                        <>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                {currentPosts.map(post => (
+                                    <Link
+                                        to={`/blog/${post.slug}`}
+                                        key={post.id}
+                                        className="group bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-100 dark:border-slate-800 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/30 transition-all duration-300 hover:-translate-y-1"
+                                    >
+                                        <div className="relative h-56 overflow-hidden">
+                                            <img
+                                                src={post.image_url}
+                                                alt={language === 'ar' ? post.title_ar : post.title_en}
+                                                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                                            />
+                                            <div className="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                                                <Calendar className="w-3 h-3" />
+                                                {post.date}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="p-6">
-                                        <h2 className="text-xl font-bold mb-3 text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors line-clamp-2">
-                                            {language === 'ar' ? post.title_ar : post.title_en}
-                                        </h2>
-                                        <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-3 mb-6">
-                                            {language === 'ar' ? post.excerpt_ar : post.excerpt_en}
-                                        </p>
-                                        <span className="inline-flex items-center text-sm font-bold text-teal-600 dark:text-teal-400 group-hover:gap-2 transition-all">
-                                            {language === 'en' ? 'Read Article' : 'اقرأ المقال'}
-                                            <ArrowRight className={`w-4 h-4 ml-1 ${isRTL ? 'rotate-180 mr-1 ml-0' : ''}`} />
-                                        </span>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
+                                        <div className="p-6">
+                                            <h2 className="text-xl font-bold mb-3 text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors line-clamp-2">
+                                                {language === 'ar' ? post.title_ar : post.title_en}
+                                            </h2>
+                                            <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-3 mb-6">
+                                                {language === 'ar' ? post.excerpt_ar : post.excerpt_en}
+                                            </p>
+                                            <span className="inline-flex items-center text-sm font-bold text-teal-600 dark:text-teal-400 group-hover:gap-2 transition-all">
+                                                {language === 'en' ? 'Read Article' : 'اقرأ المقال'}
+                                                <ArrowRight className={`w-4 h-4 ml-1 ${isRTL ? 'rotate-180 mr-1 ml-0' : ''}`} />
+                                            </span>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+
+                            {filteredPosts.length > 10 && (
+                                <Pagination
+                                    currentPage={currentPage}
+                                    totalPages={Math.ceil(filteredPosts.length / 10)}
+                                    onPageChange={(page) => {
+                                        setCurrentPage(page);
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    }}
+                                />
+                            )}
+                        </>
                     ) : (
                         <div className="text-center py-20">
                             <p className="text-slate-500 dark:text-slate-400 text-lg">
