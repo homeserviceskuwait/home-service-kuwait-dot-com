@@ -79,7 +79,7 @@ const BlogPost: React.FC = () => {
                         </h1>
                     </div>
 
-                    <div className="max-w-5xl mx-auto rounded-[2rem] overflow-hidden shadow-2xl shadow-slate-200/50 dark:shadow-black/30">
+                    <div className="max-w-5xl mx-auto rounded-[2rem] overflow-hidden shadow-2xl shadow-slate-200/50 dark:shadow-black/30 relative group">
                         <img
                             src={post.image_url}
                             alt={language === 'ar' ? post.title_ar : post.title_en}
@@ -91,30 +91,30 @@ const BlogPost: React.FC = () => {
                 {/* Article Content */}
                 <div className="container mx-auto px-4">
                     <div className="max-w-3xl mx-auto">
-                        <div className="prose prose-lg dark:prose-invert max-w-none">
-                            <p className="lead text-xl text-slate-600 dark:text-slate-300 mb-8 font-medium">
-                                {language === 'ar' ? post.excerpt_ar : post.excerpt_en}
-                            </p>
+                        <div
+                            className="prose prose-lg dark:prose-invert max-w-none mb-12"
+                            dangerouslySetInnerHTML={{ __html: language === 'ar' ? post.content_ar : post.content_en }}
+                        />
 
-                            {/* Placeholder content since we don't have full content in DB yet */}
-                            <div className="space-y-6 text-slate-600 dark:text-slate-400">
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                                </p>
-                                <p>
-                                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                                </p>
-                                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mt-8 mb-4">Key Takeaways</h3>
-                                <ul className="list-disc pl-6 space-y-2">
-                                    <li>Professional maintenance saves money in the long run</li>
-                                    <li>Regular checks prevent major breakdowns</li>
-                                    <li>Safety should always be the top priority</li>
-                                </ul>
-                                <p>
-                                    Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
-                                </p>
+                        {/* Gallery Section */}
+                        {post.gallery_images && post.gallery_images.length > 0 && (
+                            <div className="mb-12">
+                                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
+                                    {language === 'ar' ? 'معرض الصور' : 'Image Gallery'}
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {post.gallery_images.map((url, index) => (
+                                        <div key={index} className="relative aspect-square rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+                                            <img
+                                                src={url}
+                                                alt={`Gallery image ${index + 1}`}
+                                                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Share */}
                         <div className="border-t border-slate-200 dark:border-slate-800 mt-12 pt-8 flex items-center justify-between">

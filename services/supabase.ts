@@ -59,35 +59,8 @@ export interface BlogPost {
   content_en?: string;
   content_ar?: string;
   image_url: string;
+  gallery_images?: string[];
   date: string;
-  slug: string;
-  is_published: boolean;
-  sort_order: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ServiceRequest {
-  id: string;
-  customer_name: string;
-  customer_email?: string;
-  customer_phone: string;
-  service_id?: string;
-  service_type: string;
-  message?: string;
-  status: 'pending' | 'in-progress' | 'completed' | 'cancelled';
-  amount?: string;
-  scheduled_date?: string;
-  completed_date?: string;
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface AdminUser {
-  id: string;
-  email: string;
-  password_hash: string;
   name?: string;
   role: 'admin' | 'super_admin';
   is_active: boolean;

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Upload, X } from 'lucide-react';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 import { useLanguage } from '../../LanguageContext';
-import { BlogPost } from '../../services/supabase';
+import { BlogPost, supabase } from '../../services/supabase';
 import { getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost } from '../../services/apiService';
 
 const BlogPostModal: React.FC<{
@@ -10,22 +12,28 @@ const BlogPostModal: React.FC<{
     post?: BlogPost | null;
     onSave: () => void;
 }> = ({ isOpen, onClose, post, onSave }) => {
-    const [formData, setFormData] = useState<Partial<BlogPost>>({
-        title_en: '',
-        title_ar: '',
-        excerpt_en: '',
-        excerpt_ar: '',
-        image_url: '',
-        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        slug: '',
-        is_published: true,
-        sort_order: 0,
+    const [formData, setFormData] = useState<Partial<BlogPost>>(() => {
+        if (post) {
+            return { ...post };
+        }
+        return {
+            title_en: '',
+            title_ar: '',
+            excerpt_en: '',
+            excerpt_ar: '',
+            image_url: '',
+            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            slug: '',
+            is_published: true,
+            sort_order: 0,
+        };
     });
     const [loading, setLoading] = useState(false);
 
+    // Update form data if post changes while modal is open (fallback)
     useEffect(() => {
         if (post) {
-            setFormData(post);
+            setFormData({ ...post });
         } else {
             setFormData({
                 title_en: '',
@@ -39,37 +47,145 @@ const BlogPostModal: React.FC<{
                 sort_order: 0,
             });
         }
-    }, [post, isOpen]);
+    }, [post]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         try {
-            // Auto-generate slug if empty
-            if (!formData.slug && formData.title_en) {
-                formData.slug = formData.title_en.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-            }
+            const submissionData = { ...formData };
 
             if (post?.id) {
-                await updateBlogPost(post.id, formData);
+                // If editing and slug is empty, revert to original slug to prevent accidental collision
+                if (!submissionData.slug) {
+                    submissionData.slug = post.slug;
+                } else {
+                    // Ensure slug is URL friendly if manually entered
+                    submissionData.slug = submissionData.slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                }
+
+                // Remove system fields that shouldn't be updated
+                delete submissionData.id;
+                delete submissionData.created_at;
+                delete submissionData.updated_at;
+
+                console.log('Original slug:', post.slug);
+                console.log('New slug:', submissionData.slug);
+
+                // If slug hasn't changed, remove it from update to avoid unique constraint check on itself
+                if (submissionData.slug === post.slug) {
+                    console.log('Slug unchanged, removing from update');
+                    delete submissionData.slug;
+                }
+
+                await updateBlogPost(post.id, submissionData);
             } else {
-                await createBlogPost(formData as any);
+                // Auto-generate slug if empty for NEW posts
+                if (!submissionData.slug && submissionData.title_en) {
+                    submissionData.slug = submissionData.title_en.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                }
+                await createBlogPost(submissionData as any);
             }
             onSave();
             onClose();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving blog post:', error);
-            alert('Error saving blog post');
+            if (error.code === '23505' || error.message?.includes('duplicate key')) {
+                alert('This slug (URL) is already taken by another post. Please change the slug or title.');
+            } else {
+                alert('Error saving blog post');
+            }
         } finally {
             setLoading(false);
         }
     };
 
+    const [uploadingImage, setUploadingImage] = useState(false);
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length === 0) return;
+
+        const file = e.target.files[0];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        setUploadingImage(true);
+        try {
+            const { error: uploadError } = await supabase.storage
+                .from('service-images')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data } = supabase.storage
+                .from('service-images')
+                .getPublicUrl(filePath);
+
+            setFormData({ ...formData, image_url: data.publicUrl });
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('Error uploading image');
+        } finally {
+            setUploadingImage(false);
+        }
+    };
+
+    const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length === 0) return;
+
+        const files = Array.from(e.target.files) as File[];
+        if (files.length + (formData.gallery_images?.length || 0) > 10) {
+            alert('You can only upload up to 10 images in total.');
+            return;
+        }
+
+        setUploadingImage(true);
+        try {
+            const newImages: string[] = [];
+
+            for (const file of files) {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `gallery_${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+
+                const { error: uploadError } = await supabase.storage
+                    .from('service-images')
+                    .upload(fileName, file);
+
+                if (uploadError) throw uploadError;
+
+                const { data } = supabase.storage
+                    .from('service-images')
+                    .getPublicUrl(fileName);
+
+                newImages.push(data.publicUrl);
+            }
+
+            setFormData(prev => ({
+                ...prev,
+                gallery_images: [...(prev.gallery_images || []), ...newImages]
+            }));
+        } catch (error) {
+            console.error('Error uploading gallery images:', error);
+            alert('Error uploading gallery images');
+        } finally {
+            setUploadingImage(false);
+        }
+    };
+    const modules = {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+            ['link', 'image'],
+        ],
+    };
+
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl">
                 <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
                     <h2 className="text-xl font-bold text-slate-900">
                         {post ? 'Edit Blog Post' : 'Add New Blog Post'}
@@ -104,6 +220,18 @@ const BlogPostModal: React.FC<{
                                     className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
                                 />
                             </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Content (EN)</label>
+                                <div className="bg-white">
+                                    <ReactQuill
+                                        theme="snow"
+                                        value={formData.content_en || ''}
+                                        onChange={(content) => setFormData({ ...formData, content_en: content })}
+                                        modules={modules}
+                                        className="h-64 mb-12"
+                                    />
+                                </div>
+                            </div>
                         </div>
 
                         {/* Arabic Fields */}
@@ -129,30 +257,114 @@ const BlogPostModal: React.FC<{
                                     className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
                                 />
                             </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">المحتوى (AR)</label>
+                                <div className="bg-white" dir="ltr">
+                                    <ReactQuill
+                                        theme="snow"
+                                        value={formData.content_ar || ''}
+                                        onChange={(content) => setFormData({ ...formData, content_ar: content })}
+                                        modules={modules}
+                                        className="h-64 mb-12"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t">
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
-                            <div className="flex gap-2">
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Featured Image</label>
+                            <div className="space-y-3">
+                                {formData.image_url && (
+                                    <div className="relative w-full h-40 bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
+                                        <img
+                                            src={formData.image_url}
+                                            alt="Preview"
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, image_url: '' })}
+                                            className="absolute top-2 right-2 p-1 bg-white/80 rounded-full hover:bg-white text-slate-600 transition-colors"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                )}
+
+                                <div className="flex gap-2">
+                                    <label className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 border-dashed rounded-lg cursor-pointer hover:bg-slate-100 transition-colors ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                        {uploadingImage ? (
+                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-teal-600"></div>
+                                        ) : (
+                                            <Upload className="w-5 h-5 text-slate-400" />
+                                        )}
+                                        <span className="text-sm text-slate-600">
+                                            {uploadingImage ? 'Uploading...' : 'Upload Image'}
+                                        </span>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageUpload}
+                                            disabled={uploadingImage}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                </div>
                                 <input
                                     type="text"
-                                    required
+                                    placeholder="Or enter image URL directly"
                                     value={formData.image_url || ''}
                                     onChange={e => setFormData({ ...formData, image_url: e.target.value })}
-                                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none text-sm"
                                 />
-                                <a
-                                    href={formData.image_url}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
-                                >
-                                    <Upload className="w-5 h-5 text-slate-600" />
-                                </a>
                             </div>
                         </div>
+
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Gallery Images (Max 10)</label>
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
+                                {formData.gallery_images?.map((url, index) => (
+                                    <div key={index} className="relative aspect-square bg-slate-100 rounded-lg overflow-hidden border border-slate-200 group">
+                                        <img
+                                            src={url}
+                                            alt={`Gallery ${index + 1}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({
+                                                ...prev,
+                                                gallery_images: prev.gallery_images?.filter((_, i) => i !== index)
+                                            }))}
+                                            className="absolute top-1 right-1 p-1 bg-white/80 rounded-full text-red-500 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                ))}
+                                <label className={`flex flex-col items-center justify-center aspect-square bg-slate-50 border-2 border-slate-200 border-dashed rounded-lg cursor-pointer hover:bg-slate-100 transition-colors ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                    {uploadingImage ? (
+                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-teal-600"></div>
+                                    ) : (
+                                        <>
+                                            <Plus className="w-6 h-6 text-slate-400 mb-2" />
+                                            <span className="text-xs text-slate-500">Add Images</span>
+                                        </>
+                                    )}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        multiple
+                                        onChange={handleGalleryUpload}
+                                        disabled={uploadingImage}
+                                        className="hidden"
+                                    />
+                                </label>
+                            </div>
+                        </div>
+
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
                             <input
@@ -196,7 +408,7 @@ const BlogPostModal: React.FC<{
                         </button>
                         <button
                             type="submit"
-                            disabled={loading}
+                            disabled={loading || uploadingImage}
                             className="px-6 py-2 rounded-xl bg-teal-600 text-white font-bold hover:bg-teal-700 transition-colors disabled:opacity-50"
                         >
                             {loading ? 'Saving...' : 'Save Post'}
@@ -257,12 +469,14 @@ const BlogPostsView: React.FC = () => {
                 </button>
             </div>
 
-            <BlogPostModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                post={editingPost}
-                onSave={handleSave}
-            />
+            {isModalOpen && (
+                <BlogPostModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    post={editingPost}
+                    onSave={handleSave}
+                />
+            )}
 
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                 {/* Desktop Table View */}
