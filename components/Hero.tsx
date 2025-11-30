@@ -114,12 +114,12 @@ const Hero: React.FC<HeroProps> = ({ services = [] }) => {
                 let Icon = CheckCircle2;
                 let colorClass = "bg-teal-500";
 
-                if (service.includes('Camera') || service.includes('مراقبة')) { Icon = Camera; colorClass = "bg-blue-500"; }
+                if (service.includes('Camera') || service.includes('CCTV') || service.includes('مراقبة')) { Icon = Camera; colorClass = "bg-blue-500"; }
                 else if (service.includes('Attendance') || service.includes('بصمة')) { Icon = Fingerprint; colorClass = "bg-purple-500"; }
-                else if (service.includes('Sound') || service.includes('صوتية')) { Icon = Speaker; colorClass = "bg-amber-500"; }
+                else if (service.includes('Audio') || service.includes('الصوتية')) { Icon = Speaker; colorClass = "bg-amber-500"; }
                 else if (service.includes('Lock') || service.includes('أقفال')) { Icon = Lock; colorClass = "bg-red-500"; }
-                else if (service.includes('Pbx') || service.includes('بدالات')) { Icon = Phone; colorClass = "bg-cyan-500"; }
-                else if (service.includes('Network') || service.includes('شبكات')) { Icon = Wifi; colorClass = "bg-violet-500"; }
+                else if (service.includes('Exchange') || service.includes('PBX') || service.includes('بدالة')) { Icon = Phone; colorClass = "bg-cyan-500"; }
+                else if (service.includes('Internet') || service.includes('الإنترنت')) { Icon = Wifi; colorClass = "bg-violet-500"; }
                 else if (service.includes('Intercom') || service.includes('انتركم')) { Icon = Video; colorClass = "bg-emerald-500"; }
 
                 // Bento Grid Logic: Make the first item span 2 columns
