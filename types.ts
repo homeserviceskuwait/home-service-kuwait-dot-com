@@ -4,10 +4,16 @@ export interface Service {
   title_ar?: string;
   description: string;
   description_ar?: string;
-  iconName: string; // We will use a mapping for icons
+  iconName: string;
   imageUrl: string;
   priceStart: string;
   priceStart_ar?: string;
+  meta_title_en?: string;
+  meta_title_ar?: string;
+  meta_description_en?: string;
+  meta_description_ar?: string;
+  meta_keywords_en?: string;
+  meta_keywords_ar?: string;
 }
 
 export interface Testimonial {
@@ -30,6 +36,12 @@ export interface BlogPost {
   excerpt_ar?: string;
   date: string;
   imageUrl: string;
+  meta_title_en?: string;
+  meta_title_ar?: string;
+  meta_description_en?: string;
+  meta_description_ar?: string;
+  meta_keywords_en?: string;
+  meta_keywords_ar?: string;
 }
 
 export enum ChatSender {
@@ -52,4 +64,23 @@ export interface ServiceRequest {
   status: 'pending' | 'in-progress' | 'completed';
   date: string;
   amount: string;
+}
+
+export interface Product {
+  id: string;
+  name_en: string;
+  name_ar: string;
+  description_en: string;
+  description_ar: string;
+  price: number;
+  image_url: string;
+  category: string;
+  stock: number;
+  is_active: boolean;
+  meta_title_en?: string;
+  meta_title_ar?: string;
+  meta_description_en?: string;
+  meta_description_ar?: string;
+  meta_keywords_en?: string;
+  meta_keywords_ar?: string;
 }

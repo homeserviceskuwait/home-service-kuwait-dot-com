@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, ClipboardList, FileText, MessageSquare, Settings, LogOut, X, ShoppingBag, ShoppingCart } from 'lucide-react';
+import { LayoutDashboard, Package, ClipboardList, FileText, MessageSquare, Settings, LogOut, X, ShoppingBag, ShoppingCart, Globe } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import Logo from '../Logo';
 
@@ -107,6 +107,14 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose }) => {
                     >
                         <MessageSquare className="w-5 h-5" />
                         Testimonials
+                    </Link>
+                    <Link
+                        to="/admin/seo"
+                        onClick={() => onClose()}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive('/admin/seo') ? 'bg-teal-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}
+                    >
+                        <Globe className="w-5 h-5" />
+                        SEO
                     </Link>
                     <Link
                         to="/admin/settings"

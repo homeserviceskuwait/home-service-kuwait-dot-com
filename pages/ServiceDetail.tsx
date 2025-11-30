@@ -7,6 +7,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { getServiceById } from '../services/apiService';
 import { Service } from '../services/supabase';
+import SEO from '../components/SEO';
 
 const ServiceDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -77,6 +78,14 @@ const ServiceDetail: React.FC = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+            <SEO
+                title={language === 'ar' ? (service.meta_title_ar || title || '') : (service.meta_title_en || title || '')}
+                description={language === 'ar' ? (service.meta_description_ar || description || '') : (service.meta_description_en || description || '')}
+                keywords={language === 'ar' ? service.meta_keywords_ar : service.meta_keywords_en}
+                image={service.image_url}
+                url={`/services/${service.id}`}
+                lang={language}
+            />
             <Header />
 
             <main className="flex-1 pt-24 pb-16">

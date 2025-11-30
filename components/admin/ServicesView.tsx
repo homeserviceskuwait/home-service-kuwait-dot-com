@@ -255,6 +255,80 @@ const ServiceModal: React.FC<{
                         </div>
                     </div>
 
+                    {/* SEO Section */}
+                    <div className="border-t pt-6">
+                        <h3 className="font-bold text-slate-900 mb-4">SEO Settings</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <h4 className="text-sm font-semibold text-slate-600">English SEO</h4>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Meta Title (EN)</label>
+                                    <input
+                                        type="text"
+                                        value={formData.meta_title_en || ''}
+                                        onChange={e => setFormData({ ...formData, meta_title_en: e.target.value })}
+                                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                        placeholder="SEO Title"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Meta Description (EN)</label>
+                                    <textarea
+                                        rows={3}
+                                        value={formData.meta_description_en || ''}
+                                        onChange={e => setFormData({ ...formData, meta_description_en: e.target.value })}
+                                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                        placeholder="SEO Description"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Meta Keywords (EN)</label>
+                                    <input
+                                        type="text"
+                                        value={formData.meta_keywords_en || ''}
+                                        onChange={e => setFormData({ ...formData, meta_keywords_en: e.target.value })}
+                                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                        placeholder="keyword1, keyword2, keyword3"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-4" dir="rtl">
+                                <h4 className="text-sm font-semibold text-slate-600">Arabic SEO</h4>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">عنوان الميتا (AR)</label>
+                                    <input
+                                        type="text"
+                                        value={formData.meta_title_ar || ''}
+                                        onChange={e => setFormData({ ...formData, meta_title_ar: e.target.value })}
+                                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                        placeholder="عنوان SEO"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">وصف الميتا (AR)</label>
+                                    <textarea
+                                        rows={3}
+                                        value={formData.meta_description_ar || ''}
+                                        onChange={e => setFormData({ ...formData, meta_description_ar: e.target.value })}
+                                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                        placeholder="وصف SEO"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">كلمات مفتاحية (AR)</label>
+                                    <input
+                                        type="text"
+                                        value={formData.meta_keywords_ar || ''}
+                                        onChange={e => setFormData({ ...formData, meta_keywords_ar: e.target.value })}
+                                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                        placeholder="كلمة1, كلمة2, كلمة3"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t">
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
