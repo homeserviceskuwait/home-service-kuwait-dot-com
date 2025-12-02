@@ -6,6 +6,8 @@ import { useLanguage } from '../LanguageContext';
 import { useCart } from '../contexts/CartContext';
 import { Trash2, Plus, Minus, ArrowRight } from 'lucide-react';
 
+import SEO from '../components/SEO';
+
 const Cart: React.FC = () => {
     const { language, isRTL } = useLanguage();
     const { items, removeFromCart, updateQuantity, totalAmount } = useCart();
@@ -14,6 +16,10 @@ const Cart: React.FC = () => {
     if (items.length === 0) {
         return (
             <div className={`min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-white transition-colors duration-300 ${isRTL ? 'font-arabic' : 'font-sans'}`}>
+                <SEO
+                    title={language === 'en' ? 'Shopping Cart - Home Service Kuwait' : 'سلة التسوق - خدمة المنزل الكويت'}
+                    description={language === 'en' ? 'View your shopping cart and proceed to checkout.' : 'عرض سلة التسوق الخاصة بك ومتابعة الدفع.'}
+                />
                 <Header />
                 <main className="pt-32 pb-16 container mx-auto px-4 text-center">
                     <h1 className="text-3xl font-bold mb-4">{language === 'en' ? 'Your Cart is Empty' : 'سلة التسوق فارغة'}</h1>
@@ -32,6 +38,10 @@ const Cart: React.FC = () => {
 
     return (
         <div className={`min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-white transition-colors duration-300 ${isRTL ? 'font-arabic' : 'font-sans'}`}>
+            <SEO
+                title={language === 'en' ? 'Shopping Cart - Home Service Kuwait' : 'سلة التسوق - خدمة المنزل الكويت'}
+                description={language === 'en' ? 'View your shopping cart and proceed to checkout.' : 'عرض سلة التسوق الخاصة بك ومتابعة الدفع.'}
+            />
             <Header />
 
             <main className="pt-24 pb-16">

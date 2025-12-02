@@ -6,6 +6,7 @@ import { useLanguage } from '../LanguageContext';
 import { useCart } from '../contexts/CartContext';
 import { createOrder } from '../services/apiService';
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const Checkout: React.FC = () => {
     const { language, isRTL } = useLanguage();
@@ -58,6 +59,10 @@ const Checkout: React.FC = () => {
     if (orderComplete) {
         return (
             <div className={`min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-white transition-colors duration-300 ${isRTL ? 'font-arabic' : 'font-sans'}`}>
+                <SEO
+                    title={language === 'en' ? 'Order Complete - Home Service Kuwait' : 'تم الطلب - خدمة المنزل الكويت'}
+                    description={language === 'en' ? 'Thank you for your order.' : 'شكراً لطلبك.'}
+                />
                 <Header />
                 <main className="pt-32 pb-16 container mx-auto px-4 text-center">
                     <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -85,6 +90,10 @@ const Checkout: React.FC = () => {
 
     return (
         <div className={`min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-white transition-colors duration-300 ${isRTL ? 'font-arabic' : 'font-sans'}`}>
+            <SEO
+                title={language === 'en' ? 'Checkout - Home Service Kuwait' : 'الدفع - خدمة المنزل الكويت'}
+                description={language === 'en' ? 'Complete your purchase securely.' : 'أكمل عملية الشراء بأمان.'}
+            />
             <Header />
 
             <main className="pt-24 pb-16">

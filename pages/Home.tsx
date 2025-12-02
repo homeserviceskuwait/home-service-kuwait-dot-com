@@ -4,7 +4,7 @@ import Hero from '../components/Hero';
 import ServiceCard from '../components/ServiceCard';
 import Testimonials from '../components/Testimonials';
 import Footer from '../components/Footer';
-import { CONTENT, PHONE_NUMBER } from '../constants';
+import { CONTENT, PHONE_NUMBER, APP_NAME_EN, APP_NAME_AR } from '../constants';
 import { CheckCircle2, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
 import * as LucideIcons from 'lucide-react';
@@ -117,7 +117,14 @@ const Home: React.FC = () => {
 
     return (
         <div className={`min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
-            <SEO />
+            <SEO
+                title={language === 'ar' ? `${APP_NAME_AR} - ${content.hero.tagline}` : `${APP_NAME_EN} - ${content.hero.tagline}`}
+                description={content.hero.description}
+                keywords={language === 'ar'
+                    ? "خدمات منزلية, صيانة, كاميرات مراقبة, بدالات, انتركم, الكويت"
+                    : "home services, maintenance, cctv, pbx, intercom, kuwait, smart home"}
+                lang={language}
+            />
             <Header />
             <Hero />
 
