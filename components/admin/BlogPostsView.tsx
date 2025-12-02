@@ -6,6 +6,7 @@ import 'react-quill-new/dist/quill.snow.css';
 import { useLanguage } from '../../LanguageContext';
 import { BlogPost, supabase } from '../../services/supabase';
 import { getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost } from '../../services/apiService';
+import AIGenerator from './AIGenerator';
 
 const BlogPostModal: React.FC<{
     isOpen: boolean;
@@ -224,7 +225,15 @@ const BlogPostModal: React.FC<{
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Excerpt (EN)</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-slate-700">Excerpt (EN)</label>
+                                    <AIGenerator
+                                        type="text"
+                                        prompt={`Write a short excerpt (max 2 sentences) for a blog post titled "${formData.title_en}"`}
+                                        onGenerate={(text) => setFormData(prev => ({ ...prev, excerpt_en: text }))}
+                                        label="Generate"
+                                    />
+                                </div>
                                 <textarea
                                     required
                                     rows={3}
@@ -234,7 +243,15 @@ const BlogPostModal: React.FC<{
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Content (EN)</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-slate-700">Content (EN)</label>
+                                    <AIGenerator
+                                        type="text"
+                                        prompt={`Write a comprehensive blog post titled "${formData.title_en}". Use HTML formatting (h2, p, ul).`}
+                                        onGenerate={(text) => setFormData(prev => ({ ...prev, content_en: text }))}
+                                        label="Generate Draft"
+                                    />
+                                </div>
                                 <div className="bg-white">
                                     <ReactQuill
                                         theme="snow"
@@ -251,7 +268,16 @@ const BlogPostModal: React.FC<{
                         <div className="space-y-4" dir="rtl">
                             <h3 className="font-bold text-slate-900 border-b pb-2">Arabic Content</h3>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">العنوان (AR)</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-slate-700">العنوان (AR)</label>
+                                    <AIGenerator
+                                        type="translation"
+                                        targetLang="ar"
+                                        sourceText={formData.title_en}
+                                        onGenerate={(text) => setFormData(prev => ({ ...prev, title_ar: text }))}
+                                        label="Translate"
+                                    />
+                                </div>
                                 <input
                                     type="text"
                                     required
@@ -261,7 +287,16 @@ const BlogPostModal: React.FC<{
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">مقتطف (AR)</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-slate-700">مقتطف (AR)</label>
+                                    <AIGenerator
+                                        type="translation"
+                                        targetLang="ar"
+                                        sourceText={formData.excerpt_en}
+                                        onGenerate={(text) => setFormData(prev => ({ ...prev, excerpt_ar: text }))}
+                                        label="Translate"
+                                    />
+                                </div>
                                 <textarea
                                     required
                                     rows={3}
@@ -271,7 +306,16 @@ const BlogPostModal: React.FC<{
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">المحتوى (AR)</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-slate-700">المحتوى (AR)</label>
+                                    <AIGenerator
+                                        type="translation"
+                                        targetLang="ar"
+                                        sourceText={formData.content_en}
+                                        onGenerate={(text) => setFormData(prev => ({ ...prev, content_ar: text }))}
+                                        label="Translate"
+                                    />
+                                </div>
                                 <div className="bg-white" dir="ltr">
                                     <ReactQuill
                                         theme="snow"
@@ -279,6 +323,107 @@ const BlogPostModal: React.FC<{
                                         onChange={(content) => setFormData({ ...formData, content_ar: content })}
                                         modules={modules}
                                         className="h-64 mb-12"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="border-t pt-6">
+                        <h3 className="font-bold text-slate-900 mb-4">SEO Settings</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center">
+                                    <h4 className="text-sm font-semibold text-slate-600">English SEO</h4>
+                                    <AIGenerator
+                                        type="seo"
+                                        targetLang="en"
+                                        sourceText={formData.content_en || formData.excerpt_en || formData.title_en}
+                                        onGenerate={(result) => setFormData(prev => ({
+                                            ...prev,
+                                            meta_title_en: result.title,
+                                            meta_description_en: result.description,
+                                            meta_keywords_en: result.keywords
+                                        }))}
+                                        label="Auto-Fill SEO"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Meta Title (EN)</label>
+                                    <input
+                                        type="text"
+                                        value={formData.meta_title_en || ''}
+                                        onChange={e => setFormData({ ...formData, meta_title_en: e.target.value })}
+                                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                        placeholder="SEO Title"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Meta Description (EN)</label>
+                                    <textarea
+                                        rows={3}
+                                        value={formData.meta_description_en || ''}
+                                        onChange={e => setFormData({ ...formData, meta_description_en: e.target.value })}
+                                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                        placeholder="SEO Description"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Keywords (EN)</label>
+                                    <input
+                                        type="text"
+                                        value={formData.meta_keywords_en || ''}
+                                        onChange={e => setFormData({ ...formData, meta_keywords_en: e.target.value })}
+                                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                        placeholder="keyword1, keyword2, keyword3"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-4" dir="rtl">
+                                <div className="flex justify-between items-center">
+                                    <h4 className="text-sm font-semibold text-slate-600">Arabic SEO</h4>
+                                    <AIGenerator
+                                        type="seo"
+                                        targetLang="ar"
+                                        sourceText={formData.content_ar || formData.excerpt_ar || formData.title_ar || formData.title_en}
+                                        onGenerate={(result) => setFormData(prev => ({
+                                            ...prev,
+                                            meta_title_ar: result.title,
+                                            meta_description_ar: result.description,
+                                            meta_keywords_ar: result.keywords
+                                        }))}
+                                        label="Auto-Fill SEO"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">عنوان الميتا (AR)</label>
+                                    <input
+                                        type="text"
+                                        value={formData.meta_title_ar || ''}
+                                        onChange={e => setFormData({ ...formData, meta_title_ar: e.target.value })}
+                                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                        placeholder="عنوان SEO"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">وصف الميتا (AR)</label>
+                                    <textarea
+                                        rows={3}
+                                        value={formData.meta_description_ar || ''}
+                                        onChange={e => setFormData({ ...formData, meta_description_ar: e.target.value })}
+                                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                        placeholder="وصف SEO"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">الكلمات المفتاحية (AR)</label>
+                                    <input
+                                        type="text"
+                                        value={formData.meta_keywords_ar || ''}
+                                        onChange={e => setFormData({ ...formData, meta_keywords_ar: e.target.value })}
+                                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                                        placeholder="كلمة 1، كلمة 2، كلمة 3"
                                     />
                                 </div>
                             </div>

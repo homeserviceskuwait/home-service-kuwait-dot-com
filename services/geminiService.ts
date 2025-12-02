@@ -58,3 +58,47 @@ export const sendMessageToGemini = async (chat: Chat, message: string): Promise<
     return "I'm having trouble connecting to the service right now. Please try again later.";
   }
 };
+
+// --- Content Generation Functions ---
+
+export const generateContent = async (prompt: string): Promise<string> => {
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      config: {
+        temperature: 0.7,
+        maxOutputTokens: 1000,
+      }
+    });
+    return response.text || '';
+  } catch (error) {
+    console.error("Gemini Generate Content Error:", error);
+    throw error;
+  }
+};
+
+export const translateText = async (text: string, targetLang: 'ar' | 'en'): Promise<string> => {
+  const prompt = `Translate the following text to ${targetLang === 'ar' ? 'Arabic' : 'English'}. Return ONLY the translation, no extra text or explanations.\n\nText: "${text}"`;
+  return generateContent(prompt);
+};
+
+export const generateSEO = async (content: string, lang: 'en' | 'ar'): Promise<{ title: string; description: string; keywords: string }> => {
+  const prompt = `
+    Analyze the following content and generate SEO metadata in ${lang === 'ar' ? 'Arabic' : 'English'}.
+    Return the result as a valid JSON object with keys: "title" (max 60 chars), "description" (max 160 chars), and "keywords" (comma-separated string).
+    Do not wrap the JSON in markdown code blocks. Just return the raw JSON string.
+
+    Content: "${content.substring(0, 1000)}..."
+  `;
+
+  try {
+    const result = await generateContent(prompt);
+    // Clean up if markdown code blocks are returned despite instructions
+    const cleanResult = result.replace(/```json/g, '').replace(/```/g, '').trim();
+    return JSON.parse(cleanResult);
+  } catch (error) {
+    console.error("Gemini SEO Generation Error:", error);
+    return { title: '', description: '', keywords: '' };
+  }
+};

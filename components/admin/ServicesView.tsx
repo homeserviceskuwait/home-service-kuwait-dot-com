@@ -3,6 +3,7 @@ import { Plus, Search, Upload, X, Image as ImageIcon, Loader2 } from 'lucide-rea
 import { useLanguage } from '../../LanguageContext';
 import { Service, supabase } from '../../services/supabase';
 import { getServices, createService, updateService, deleteService } from '../../services/apiService';
+import AIGenerator from './AIGenerator';
 
 const ServiceModal: React.FC<{
     isOpen: boolean;
@@ -136,7 +137,15 @@ const ServiceModal: React.FC<{
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Description (EN)</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-slate-700">Description (EN)</label>
+                                    <AIGenerator
+                                        type="text"
+                                        prompt={`Write a short, engaging description (max 2 sentences) for a home service called "${formData.title_en}". Focus on benefits.`}
+                                        onGenerate={(text) => setFormData(prev => ({ ...prev, description_en: text }))}
+                                        label="Generate"
+                                    />
+                                </div>
                                 <textarea
                                     required
                                     rows={3}
@@ -146,7 +155,15 @@ const ServiceModal: React.FC<{
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Long Description (EN)</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-slate-700">Long Description (EN)</label>
+                                    <AIGenerator
+                                        type="text"
+                                        prompt={`Write a detailed description (3-4 paragraphs) for a home service called "${formData.title_en}". Include what it is, why it's important, and how it helps the customer.`}
+                                        onGenerate={(text) => setFormData(prev => ({ ...prev, long_description_en: text }))}
+                                        label="Generate"
+                                    />
+                                </div>
                                 <textarea
                                     rows={5}
                                     value={formData.long_description_en || ''}
@@ -192,7 +209,16 @@ const ServiceModal: React.FC<{
                         <div className="space-y-4" dir="rtl">
                             <h3 className="font-bold text-slate-900 border-b pb-2">Arabic Content</h3>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">العنوان (AR)</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-slate-700">العنوان (AR)</label>
+                                    <AIGenerator
+                                        type="translation"
+                                        targetLang="ar"
+                                        sourceText={formData.title_en}
+                                        onGenerate={(text) => setFormData(prev => ({ ...prev, title_ar: text }))}
+                                        label="Translate"
+                                    />
+                                </div>
                                 <input
                                     type="text"
                                     required
@@ -202,7 +228,16 @@ const ServiceModal: React.FC<{
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">الوصف (AR)</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-slate-700">الوصف (AR)</label>
+                                    <AIGenerator
+                                        type="translation"
+                                        targetLang="ar"
+                                        sourceText={formData.description_en}
+                                        onGenerate={(text) => setFormData(prev => ({ ...prev, description_ar: text }))}
+                                        label="Translate"
+                                    />
+                                </div>
                                 <textarea
                                     required
                                     rows={3}
@@ -212,7 +247,16 @@ const ServiceModal: React.FC<{
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">وصف تفصيلي (AR)</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-slate-700">وصف تفصيلي (AR)</label>
+                                    <AIGenerator
+                                        type="translation"
+                                        targetLang="ar"
+                                        sourceText={formData.long_description_en}
+                                        onGenerate={(text) => setFormData(prev => ({ ...prev, long_description_ar: text }))}
+                                        label="Translate"
+                                    />
+                                </div>
                                 <textarea
                                     rows={5}
                                     value={formData.long_description_ar || ''}
@@ -260,7 +304,21 @@ const ServiceModal: React.FC<{
                         <h3 className="font-bold text-slate-900 mb-4">SEO Settings</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-4">
-                                <h4 className="text-sm font-semibold text-slate-600">English SEO</h4>
+                                <div className="flex justify-between items-center">
+                                    <h4 className="text-sm font-semibold text-slate-600">English SEO</h4>
+                                    <AIGenerator
+                                        type="seo"
+                                        targetLang="en"
+                                        sourceText={formData.long_description_en || formData.description_en || formData.title_en}
+                                        onGenerate={(result) => setFormData(prev => ({
+                                            ...prev,
+                                            meta_title_en: result.title,
+                                            meta_description_en: result.description,
+                                            meta_keywords_en: result.keywords
+                                        }))}
+                                        label="Auto-Fill SEO"
+                                    />
+                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Meta Title (EN)</label>
                                     <input
@@ -294,7 +352,21 @@ const ServiceModal: React.FC<{
                             </div>
 
                             <div className="space-y-4" dir="rtl">
-                                <h4 className="text-sm font-semibold text-slate-600">Arabic SEO</h4>
+                                <div className="flex justify-between items-center">
+                                    <h4 className="text-sm font-semibold text-slate-600">Arabic SEO</h4>
+                                    <AIGenerator
+                                        type="seo"
+                                        targetLang="ar"
+                                        sourceText={formData.long_description_ar || formData.description_ar || formData.title_ar || formData.title_en}
+                                        onGenerate={(result) => setFormData(prev => ({
+                                            ...prev,
+                                            meta_title_ar: result.title,
+                                            meta_description_ar: result.description,
+                                            meta_keywords_ar: result.keywords
+                                        }))}
+                                        label="Auto-Fill SEO"
+                                    />
+                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">عنوان الميتا (AR)</label>
                                     <input

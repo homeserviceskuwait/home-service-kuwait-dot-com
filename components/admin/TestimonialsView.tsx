@@ -3,6 +3,7 @@ import { Plus, X, Star } from 'lucide-react';
 import { useLanguage } from '../../LanguageContext';
 import { Testimonial } from '../../services/supabase';
 import { getTestimonials, createTestimonial, updateTestimonial, deleteTestimonial } from '../../services/apiService';
+import AIGenerator from './AIGenerator';
 
 const TestimonialModal: React.FC<{
     isOpen: boolean;
@@ -100,7 +101,15 @@ const TestimonialModal: React.FC<{
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Comment (EN)</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-slate-700">Comment (EN)</label>
+                                    <AIGenerator
+                                        type="text"
+                                        prompt={`Write a short, positive testimonial (2-3 sentences) for a home service company from a customer named "${formData.name || 'John Doe'}".`}
+                                        onGenerate={(text) => setFormData(prev => ({ ...prev, comment: text }))}
+                                        label="Generate Sample"
+                                    />
+                                </div>
                                 <textarea
                                     required
                                     rows={3}
@@ -115,7 +124,16 @@ const TestimonialModal: React.FC<{
                         <div className="space-y-4" dir="rtl">
                             <h3 className="font-bold text-slate-900 border-b pb-2">Arabic Content</h3>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">الاسم (AR)</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-slate-700">الاسم (AR)</label>
+                                    <AIGenerator
+                                        type="translation"
+                                        targetLang="ar"
+                                        sourceText={formData.name}
+                                        onGenerate={(text) => setFormData(prev => ({ ...prev, name_ar: text }))}
+                                        label="Translate"
+                                    />
+                                </div>
                                 <input
                                     type="text"
                                     required
@@ -125,7 +143,16 @@ const TestimonialModal: React.FC<{
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">الدور (AR)</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-slate-700">الدور (AR)</label>
+                                    <AIGenerator
+                                        type="translation"
+                                        targetLang="ar"
+                                        sourceText={formData.role}
+                                        onGenerate={(text) => setFormData(prev => ({ ...prev, role_ar: text }))}
+                                        label="Translate"
+                                    />
+                                </div>
                                 <input
                                     type="text"
                                     required
@@ -135,7 +162,16 @@ const TestimonialModal: React.FC<{
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">التعليق (AR)</label>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-slate-700">التعليق (AR)</label>
+                                    <AIGenerator
+                                        type="translation"
+                                        targetLang="ar"
+                                        sourceText={formData.comment}
+                                        onGenerate={(text) => setFormData(prev => ({ ...prev, comment_ar: text }))}
+                                        label="Translate"
+                                    />
+                                </div>
                                 <textarea
                                     required
                                     rows={3}

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Plus, Search, Edit, Trash2, X, Image as ImageIcon, Loader2, Upload } from 'lucide-react';
 import { Product, supabase } from '../../services/supabase';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '../../services/apiService';
+import AIGenerator from './AIGenerator';
 
 const CATEGORIES = [
     'Intercom',
@@ -281,7 +282,16 @@ const ProductsView: React.FC = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Title (Arabic)</label>
+                                    <div className="flex justify-between items-center mb-1">
+                                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Title (Arabic)</label>
+                                        <AIGenerator
+                                            type="translation"
+                                            targetLang="ar"
+                                            sourceText={formData.title_en}
+                                            onGenerate={(text) => setFormData(prev => ({ ...prev, title_ar: text }))}
+                                            label="Translate"
+                                        />
+                                    </div>
                                     <input
                                         type="text"
                                         required
@@ -369,7 +379,15 @@ const ProductsView: React.FC = () => {
 
                             <div className="grid grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description (English)</label>
+                                    <div className="flex justify-between items-center mb-1">
+                                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Description (English)</label>
+                                        <AIGenerator
+                                            type="text"
+                                            prompt={`Write a compelling product description for "${formData.title_en}". Focus on features and benefits.`}
+                                            onGenerate={(text) => setFormData(prev => ({ ...prev, description_en: text }))}
+                                            label="Generate"
+                                        />
+                                    </div>
                                     <textarea
                                         rows={4}
                                         value={formData.description_en}
@@ -378,13 +396,125 @@ const ProductsView: React.FC = () => {
                                     ></textarea>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description (Arabic)</label>
+                                    <div className="flex justify-between items-center mb-1">
+                                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Description (Arabic)</label>
+                                        <AIGenerator
+                                            type="translation"
+                                            targetLang="ar"
+                                            sourceText={formData.description_en}
+                                            onGenerate={(text) => setFormData(prev => ({ ...prev, description_ar: text }))}
+                                            label="Translate"
+                                        />
+                                    </div>
                                     <textarea
                                         rows={4}
                                         value={formData.description_ar}
                                         onChange={(e) => setFormData({ ...formData, description_ar: e.target.value })}
                                         className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-teal-500 outline-none resize-none"
                                     ></textarea>
+                                </div>
+                            </div>
+
+
+
+                            <div className="border-t border-slate-200 dark:border-slate-700 pt-6">
+                                <h3 className="font-bold text-slate-900 dark:text-white mb-4">SEO Settings</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <h4 className="text-sm font-semibold text-slate-600 dark:text-slate-400">English SEO</h4>
+                                            <AIGenerator
+                                                type="seo"
+                                                targetLang="en"
+                                                sourceText={formData.description_en || formData.title_en}
+                                                onGenerate={(result) => setFormData(prev => ({
+                                                    ...prev,
+                                                    meta_title_en: result.title,
+                                                    meta_description_en: result.description,
+                                                    meta_keywords_en: result.keywords
+                                                }))}
+                                                label="Auto-Fill SEO"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Meta Title (EN)</label>
+                                            <input
+                                                type="text"
+                                                value={formData.meta_title_en || ''}
+                                                onChange={e => setFormData({ ...formData, meta_title_en: e.target.value })}
+                                                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-teal-500 outline-none"
+                                                placeholder="SEO Title"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Meta Description (EN)</label>
+                                            <textarea
+                                                rows={3}
+                                                value={formData.meta_description_en || ''}
+                                                onChange={e => setFormData({ ...formData, meta_description_en: e.target.value })}
+                                                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-teal-500 outline-none"
+                                                placeholder="SEO Description"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Keywords (EN)</label>
+                                            <input
+                                                type="text"
+                                                value={formData.meta_keywords_en || ''}
+                                                onChange={e => setFormData({ ...formData, meta_keywords_en: e.target.value })}
+                                                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-teal-500 outline-none"
+                                                placeholder="keyword1, keyword2, keyword3"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4" dir="rtl">
+                                        <div className="flex justify-between items-center">
+                                            <h4 className="text-sm font-semibold text-slate-600 dark:text-slate-400">Arabic SEO</h4>
+                                            <AIGenerator
+                                                type="seo"
+                                                targetLang="ar"
+                                                sourceText={formData.description_ar || formData.title_ar || formData.title_en}
+                                                onGenerate={(result) => setFormData(prev => ({
+                                                    ...prev,
+                                                    meta_title_ar: result.title,
+                                                    meta_description_ar: result.description,
+                                                    meta_keywords_ar: result.keywords
+                                                }))}
+                                                label="Auto-Fill SEO"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">عنوان الميتا (AR)</label>
+                                            <input
+                                                type="text"
+                                                value={formData.meta_title_ar || ''}
+                                                onChange={e => setFormData({ ...formData, meta_title_ar: e.target.value })}
+                                                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-teal-500 outline-none"
+                                                placeholder="عنوان SEO"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">وصف الميتا (AR)</label>
+                                            <textarea
+                                                rows={3}
+                                                value={formData.meta_description_ar || ''}
+                                                onChange={e => setFormData({ ...formData, meta_description_ar: e.target.value })}
+                                                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-teal-500 outline-none"
+                                                placeholder="وصف SEO"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">الكلمات المفتاحية (AR)</label>
+                                            <input
+                                                type="text"
+                                                value={formData.meta_keywords_ar || ''}
+                                                onChange={e => setFormData({ ...formData, meta_keywords_ar: e.target.value })}
+                                                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-teal-500 outline-none"
+                                                placeholder="كلمة 1، كلمة 2، كلمة 3"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -418,10 +548,10 @@ const ProductsView: React.FC = () => {
                             </div>
                         </form>
                     </div>
-                </div>,
+                </div >,
                 document.body
             )}
-        </div>
+        </div >
     );
 };
 
