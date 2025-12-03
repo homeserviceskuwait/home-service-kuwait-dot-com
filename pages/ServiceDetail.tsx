@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Phone, CheckCircle2, MessageCircle } from 'lucide-react';
-import { PHONE_NUMBER, CONTENT } from '../constants';
+import { PHONE_NUMBER, CONTENT, APP_NAME_EN, APP_NAME_AR } from '../constants';
 import { useLanguage } from '../LanguageContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -85,6 +85,19 @@ const ServiceDetail: React.FC = () => {
                 image={service.image_url}
                 url={`/services/${service.id}`}
                 lang={language}
+                schemaMarkup={{
+                    '@context': 'https://schema.org',
+                    '@type': 'Service',
+                    name: title,
+                    description: description,
+                    provider: {
+                        '@type': 'LocalBusiness',
+                        name: language === 'ar' ? APP_NAME_AR : APP_NAME_EN,
+                        telephone: PHONE_NUMBER
+                    },
+                    areaServed: 'Kuwait',
+                    url: `https://homeservicekuwait.com/services/${service.id}`
+                }}
             />
             <Header />
 

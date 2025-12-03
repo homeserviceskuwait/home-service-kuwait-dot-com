@@ -2,3 +2,6 @@ User-agent: *
 Allow: /
 
 Sitemap: https://homeservicekuwait.com/sitemap.xml
+
+User-agent: Googlebot
+Disallow: /private

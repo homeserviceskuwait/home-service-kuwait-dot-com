@@ -66,6 +66,21 @@ const ProductDetails: React.FC = () => {
                 url={`/shop/${product.id}`}
                 type="product"
                 lang={language}
+                schemaMarkup={{
+                    '@context': 'https://schema.org',
+                    '@type': 'Product',
+                    name: title,
+                    description: description,
+                    image: product.image_url,
+                    sku: product.id,
+                    offers: {
+                        '@type': 'Offer',
+                        price: product.price,
+                        priceCurrency: 'KWD',
+                        availability: 'https://schema.org/InStock',
+                        url: `https://homeservicekuwait.com/shop/${product.id}`
+                    }
+                }}
             />
             <Header />
 

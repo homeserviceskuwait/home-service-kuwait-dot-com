@@ -9,6 +9,7 @@ interface SEOProps {
     url?: string;
     type?: string;
     lang?: 'en' | 'ar';
+    schemaMarkup?: object;
 }
 
 const SEO: React.FC<SEOProps> = ({
@@ -18,7 +19,8 @@ const SEO: React.FC<SEOProps> = ({
     image,
     url,
     type = 'website',
-    lang = 'en'
+    lang = 'en',
+    schemaMarkup
 }) => {
     const siteUrl = 'https://homeservicekuwait.com'; // Replace with actual domain
     const fullUrl = url ? (url.startsWith('http') ? url : `${siteUrl}${url}`) : siteUrl;
@@ -46,6 +48,13 @@ const SEO: React.FC<SEOProps> = ({
             <meta property="twitter:title" content={title} />
             <meta property="twitter:description" content={description} />
             <meta property="twitter:image" content={fullImage} />
+
+            {/* Structured Data (Schema Markup) */}
+            {schemaMarkup && (
+                <script type="application/ld+json">
+                    {JSON.stringify(schemaMarkup)}
+                </script>
+            )}
         </Helmet>
     );
 };
