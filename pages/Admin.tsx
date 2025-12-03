@@ -12,6 +12,7 @@ import RequestsView from '../components/admin/RequestsView';
 import BlogPostsView from '../components/admin/BlogPostsView';
 import TestimonialsView from '../components/admin/TestimonialsView';
 import SettingsView from '../components/admin/SettingsView';
+import PerformanceView from '../components/admin/PerformanceView';
 import SEOView from '../components/admin/SEOView';
 import Logo from '../components/Logo';
 
@@ -64,6 +65,7 @@ const Admin: React.FC = () => {
             <Route path="requests" element={<RequestsView />} />
             <Route path="blogs" element={<BlogPostsView />} />
             <Route path="testimonials" element={<TestimonialsView />} />
+            <Route path="performance" element={<PerformanceView />} />
             <Route path="seo" element={<SEOView />} />
             <Route path="settings" element={<SettingsView />} />
             <Route path="*" element={<DashboardView />} />
