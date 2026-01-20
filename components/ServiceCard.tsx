@@ -31,6 +31,9 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onClick }) => {
               <img
                 src={service.imageUrl}
                 alt={service.title}
+                loading="lazy"
+                width={400}
+                height={192}
                 className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
               />
               <div className="absolute top-3 right-3 z-20 w-10 h-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur rounded-xl flex items-center justify-center text-teal-600 dark:text-teal-400 shadow-sm">

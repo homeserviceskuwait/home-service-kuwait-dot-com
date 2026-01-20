@@ -267,7 +267,7 @@ const Home: React.FC = () => {
                                         className="min-w-[85vw] md:min-w-0 snap-center group cursor-pointer bg-white dark:bg-slate-900 rounded-3xl p-3 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/30 transition-all duration-300"
                                     >
                                         <div className="overflow-hidden rounded-2xl mb-5 h-56 relative">
-                                            <img src={post.image_url} alt={language === 'ar' ? post.title_ar : post.title_en} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                                            <img src={post.image_url} alt={language === 'ar' ? post.title_ar : post.title_en} loading="lazy" width={400} height={224} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
                                             <div className={`absolute top-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-slate-800 dark:text-white ${isRTL ? 'right-4' : 'left-4'}`}>
                                                 {post.date}
                                             </div>
