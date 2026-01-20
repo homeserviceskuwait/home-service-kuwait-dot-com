@@ -5,34 +5,32 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="google-site-verification" content="P3d3JZJdunqYcAjy46k5N2YnbFsUKmXHVe4monK2lqw" />
-  
+
   <!-- Preconnect to external domains for faster loading -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://www.googletagmanager.com">
-  
-  <!-- Preload critical fonts -->
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap">
-  
-  <!-- Load fonts with display=swap for better LCP -->
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
+
+  <!-- Load only essential font weights for performance -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
   <!-- Custom Favicon -->
   <link rel="icon" type="image/svg+xml"
     href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%230d9488'/%3E%3Cpath d='M20 7L8 17H11V29H17V22H23V29H29V17H32L20 7Z' fill='white'/%3E%3Ccircle cx='20' cy='20' r='3' fill='%230d9488'/%3E%3C/svg%3E">
 </head>
 
-<body class="bg-slate-50 text-slate-900 antialiased font-sans selection:bg-teal-100 selection:text-teal-900 transition-all duration-300">
+<body
+  class="bg-slate-50 text-slate-900 antialiased font-sans selection:bg-teal-100 selection:text-teal-900 transition-all duration-300">
   <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
-  
+
   <!-- Defer Google Analytics to not block rendering -->
   <script defer src="https://www.googletagmanager.com/gtag/js?id=G-N3N8J0EF52"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-N3N8J0EF52');
   </script>
